@@ -1,11 +1,7 @@
 import { Schema, SchemaFactory, Prop } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { HydratedDocument } from "mongoose";
-
-export enum PunchType{
-    IN = 'IN',
-    OUT = 'OUT',
-}
+import { PunchType } from "./enums/index";
 
 export type Punch = {
     type: PunchType;

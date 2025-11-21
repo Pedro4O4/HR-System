@@ -1,13 +1,7 @@
 import { SchemaFactory, Schema, Prop } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { HydratedDocument } from "mongoose";
-
-export enum ShiftAssignmentStatus {
-    PENDING = 'PENDING',
-    APPROVED = 'APPROVED',
-    CANCELLED = 'CANCELLED',
-    EXPIRED = 'EXPIRED',
-}
+import { ShiftAssignmentStatus } from "./enums/index";
 
 export type ShiftAssignmentDocument = HydratedDocument<ShiftAssignment>;
 

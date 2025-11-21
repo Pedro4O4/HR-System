@@ -1,12 +1,7 @@
 import { SchemaFactory, Schema, Prop} from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { HydratedDocument } from "mongoose";
-
-export enum PunchPolicy{
-    MULTIPLE = 'MULTIPLE',
-    FIRST_LAST = 'FIRST_LAST',
-    ONLY_FIRST = 'ONLY_FIRST',
-}
+import { PunchPolicy } from "./enums/index";
 
 export type ShiftDocument = HydratedDocument<Shift>;
 

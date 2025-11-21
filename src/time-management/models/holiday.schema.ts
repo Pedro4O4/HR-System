@@ -1,11 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-
-export enum HolidayType {
-  NATIONAL = 'NATIONAL',
-  ORGANIZATIONAL = 'ORGANIZATIONAL',
-  WEEKLY_REST = 'WEEKLY_REST',
-}
+import { HolidayType } from './enums/index';
 
 export type HolidayDocument = HydratedDocument<Holiday>;
 
