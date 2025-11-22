@@ -11,6 +11,7 @@ import { LeaveAdjustment, LeaveAdjustmentSchema } from './models/leave-adjustmen
 import { Calendar, CalendarSchema} from './models/calendar.schema';
 import { Attachment,AttachmentSchema } from './models/attachment.schema';
 import { EmployeeProfileModule } from '../employee-profile/employee-profile.module';
+import { TimeManagementModule } from '../time-management/time-management.module';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:LeaveType.name,schema:LeaveTypeSchema},
@@ -21,7 +22,7 @@ import { EmployeeProfileModule } from '../employee-profile/employee-profile.modu
     {name: LeaveAdjustment.name, schema:LeaveAdjustmentSchema},
     {name:Calendar.name, schema:CalendarSchema},
     {name:Attachment.name, schema: AttachmentSchema}
-  ]),EmployeeProfileModule],
+  ]),EmployeeProfileModule,TimeManagementModule],
   controllers: [LeavesController],
   providers: [LeavesService],
   exports:[LeavesService]
