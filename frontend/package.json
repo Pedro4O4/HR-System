@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3001",
     "lint": "eslint"
   },
   "dependencies": {
@@ -13,12 +13,9 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.6",
     "@mui/material": "^7.3.6",
-    "@next/swc-darwin-arm64": "^16.0.8",
     "@tanstack/react-query": "^5.90.12",
     "axios": "^1.13.2",
     "framer-motion": "^12.23.25",
-    "lightningcss": "^1.30.2",
-    "lightningcss-darwin-arm64": "^1.30.2",
     "lucide-react": "^0.556.0",
     "next": "16.0.7",
     "react": "19.2.0",
