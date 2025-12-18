@@ -15,6 +15,9 @@ export class AttendanceCorrectionRequest {
     @Prop({ type: Types.ObjectId, ref: 'EmployeeProfile', required: true })
     employeeId: Types.ObjectId;
 
+    @Prop({ required: true })
+    employeeNumber: string;
+
     @Prop({ type: Types.ObjectId, ref: 'AttendanceRecord' })
     attendanceRecordId?: Types.ObjectId;
 

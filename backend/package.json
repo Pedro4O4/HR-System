@@ -19,6 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed:roles": "ts-node src/seeds/seed-roles.ts",
+    "seed:corrections": "ts-node src/seeds/seed-corrections.ts",
+    "seed:attendance": "ts-node src/seeds/seed-attendance.ts",
+    "seed:exceptions": "ts-node src/seeds/seed-exceptions.ts",
     "seed": "ts-node src/seeds/seed.ts"
   },
   "dependencies": {

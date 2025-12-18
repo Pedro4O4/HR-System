@@ -10,6 +10,7 @@ import { NotificationLog } from './models/notification-log.schema';
 import { AttendanceRecord, AttendanceRecordDocument, Punch } from './models/attendance-record.schema';
 import { AttendanceCorrectionRequest, AttendanceCorrectionRequestDocument } from './models/attendance-correction-request.schema';
 import { Settings, SettingsDocument } from './models/settings.schema';
+import { EmployeeProfile, EmployeeProfileDocument } from '../employee-profile/models/employee-profile.schema';
 import { OvertimeRule, OvertimeRuleDocument } from './models/overtime-rule.schema';
 import { LatenessRule, LatenessRuleDocument } from './models/lateness-rule.schema';
 import { TimeException, TimeExceptionDocument } from './models/time-exception.schema';
@@ -61,6 +62,7 @@ export class TimeManagementService {
     @InjectModel(OvertimeRule.name) private overtimeRuleModel: Model<OvertimeRuleDocument>,
     @InjectModel(LatenessRule.name) private latenessRuleModel: Model<LatenessRuleDocument>,
     @InjectModel(TimeException.name) private timeExceptionModel: Model<TimeExceptionDocument>,
+    @InjectModel(EmployeeProfile.name) private employeeProfileModel: Model<EmployeeProfileDocument>,
     // Integration Services
     private readonly payrollIntegration: PayrollIntegrationService,
     private readonly leavesIntegration: LeavesIntegrationService,
@@ -532,8 +534,21 @@ export class TimeManagementService {
   // ==================== CORRECTION REQUESTS (Story 12 & 13) ====================
 
   async createCorrectionRequest(dto: CreateCorrectionRequestDto) {
+    // Lookup employee by employeeNumber (provided in dto.employeeId based on user feedback)
+    // Or fallback to checking if it's an ObjectId for backward compatibility/safety
+    let employee = await this.employeeProfileModel.findOne({ employeeNumber: dto.employeeId });
+
+    if (!employee && Types.ObjectId.isValid(dto.employeeId)) {
+      employee = await this.employeeProfileModel.findById(dto.employeeId);
+    }
+
+    if (!employee) {
+      throw new NotFoundException(`Employee with ID/Number ${dto.employeeId} not found`);
+    }
+
     const request = new this.correctionRequestModel({
-      employeeId: new Types.ObjectId(dto.employeeId),
+      employeeId: employee._id,
+      employeeNumber: employee.employeeNumber,
       attendanceRecordId: dto.attendanceRecordId ? new Types.ObjectId(dto.attendanceRecordId) : undefined,
       date: new Date(dto.date),
       requestedPunches: dto.requestedPunches.map(p => ({
@@ -583,6 +598,7 @@ export class TimeManagementService {
   async getMyRequests(employeeId: string) {
     return this.correctionRequestModel
       .find({ employeeId: new Types.ObjectId(employeeId) })
+      .populate('employeeId', 'firstName lastName fullName employeeNumber')
       .populate('reviewedBy', 'firstName lastName fullName')
       .sort({ createdAt: -1 })
       .exec();
@@ -949,28 +965,12 @@ export class TimeManagementService {
    * Queries by attendance record date for accurate date filtering
    */
   async getExceptionsReport(dto: GetReportDto) {
-    // First, get attendance records in the date range
-    const attendanceQuery: any = {
+    // Query exceptions directly by date
+    const exceptionQuery: any = {
       date: {
         $gte: new Date(dto.startDate),
         $lte: new Date(dto.endDate),
       },
-    };
-
-    if (dto.employeeId) {
-      attendanceQuery.employeeId = new Types.ObjectId(dto.employeeId);
-    }
-
-    const attendanceRecords = await this.attendanceRecordModel
-      .find(attendanceQuery)
-      .select('_id')
-      .exec();
-
-    const attendanceIds = attendanceRecords.map(r => r._id);
-
-    // Query exceptions for those attendance records
-    const exceptionQuery: any = {
-      attendanceRecordId: { $in: attendanceIds },
     };
 
     if (dto.employeeId) {
@@ -1102,6 +1102,7 @@ export class TimeManagementService {
     return {
       startDate: dto.startDate,
       endDate: dto.endDate,
+      totalRecords: filteredRecords.length,
       summary: {
         totalRecords: filteredRecords.length,
         uniqueEmployees,
