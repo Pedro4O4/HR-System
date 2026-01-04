@@ -1,23 +1,29 @@
-import { IsDateString, IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class AssignPositionDto {
-    @IsMongoId()
-    @IsNotEmpty()
-    employeeProfileId: string;
+  @IsMongoId()
+  @IsNotEmpty()
+  employeeProfileId: string;
 
-    @IsMongoId()
-    @IsNotEmpty()
-    positionId: string;
+  @IsMongoId()
+  @IsNotEmpty()
+  positionId: string;
 
-    @IsDateString()
-    @IsNotEmpty()
-    startDate: string;
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
 
-    @IsString()
-    @IsOptional()
-    reason?: string;
+  @IsString()
+  @IsOptional()
+  reason?: string;
 
-    @IsString()
-    @IsOptional()
-    notes?: string;
+  @IsString()
+  @IsOptional()
+  notes?: string;
 }

@@ -12,7 +12,10 @@ import { benefit, benefitDocument } from './models/benefit.schema';
 import { signingBonus } from './models/signingBonus.schema';
 import { payrollPolicies } from './models/payrollPolicies.schema';
 import { CompanyWideSettings } from './models/CompanyWideSettings.schema';
-import { configBackup, configBackupDocument } from './models/configBackup.schema';
+import {
+  configBackup,
+  configBackupDocument,
+} from './models/configBackup.schema';
 import { ConfigStatus } from './enums/payroll-configuration-enums';
 
 // ===== DTOs =====
@@ -77,7 +80,7 @@ export class PayrollConfigurationService {
     // CONFIG BACKUPS
     @InjectModel(configBackup.name)
     private readonly configBackupModel: Model<configBackupDocument>,
-  ) { }
+  ) {}
 
   /* ==========================
    *          PAY TYPES
@@ -187,8 +190,6 @@ export class PayrollConfigurationService {
     return deleted;
   }
 
-
-
   /* ==========================
    *          BENEFITS
    * ========================== */
@@ -236,9 +237,7 @@ export class PayrollConfigurationService {
   }
 
   async deleteSigningBonus(id: string) {
-    const deleted = await this.signingBonusModel
-      .findByIdAndDelete(id)
-      .exec();
+    const deleted = await this.signingBonusModel.findByIdAndDelete(id).exec();
     if (!deleted) throw new NotFoundException('Signing bonus not found');
     return deleted;
   }
@@ -387,105 +386,115 @@ export class PayrollConfigurationService {
       await Promise.all([
         backupData.payTypes?.length > 0
           ? this.payTypeModel
-            .insertMany(
-              backupData.payTypes.map(cleanDocument).filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring payTypes:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.payTypes
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring payTypes:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.payGrades?.length > 0
           ? this.payGradeModel
-            .insertMany(
-              backupData.payGrades.map(cleanDocument).filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring payGrades:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.payGrades
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring payGrades:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.allowances?.length > 0
           ? this.allowanceModel
-            .insertMany(
-              backupData.allowances.map(cleanDocument).filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring allowances:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.allowances
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring allowances:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.insuranceBrackets?.length > 0
           ? this.insuranceBracketsModel
-            .insertMany(
-              backupData.insuranceBrackets
-                .map(cleanDocument)
-                .filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring insuranceBrackets:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.insuranceBrackets
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring insuranceBrackets:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.taxRules?.length > 0
           ? this.taxRulesModel
-            .insertMany(
-              backupData.taxRules.map(cleanDocument).filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring taxRules:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.taxRules
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring taxRules:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.benefits?.length > 0
           ? this.benefitModel
-            .insertMany(
-              backupData.benefits.map(cleanDocument).filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring benefits:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.benefits
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring benefits:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.signingBonuses?.length > 0
           ? this.signingBonusModel
-            .insertMany(
-              backupData.signingBonuses
-                .map(cleanDocument)
-                .filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring signingBonuses:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.signingBonuses
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring signingBonuses:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.payrollPolicies?.length > 0
           ? this.payrollPoliciesModel
-            .insertMany(
-              backupData.payrollPolicies
-                .map(cleanDocument)
-                .filter((d) => d !== null),
-              insertOptions,
-            )
-            .catch((err) => {
-              console.error('Error restoring payrollPolicies:', err);
-              throw err;
-            })
+              .insertMany(
+                backupData.payrollPolicies
+                  .map(cleanDocument)
+                  .filter((d) => d !== null),
+                insertOptions,
+              )
+              .catch((err) => {
+                console.error('Error restoring payrollPolicies:', err);
+                throw err;
+              })
           : Promise.resolve(),
         backupData.companySettings
           ? this.companySettingsModel
-            .create(cleanDocument(backupData.companySettings))
-            .catch((err) => {
-              console.error('Error restoring companySettings:', err);
-              throw err;
-            })
+              .create(cleanDocument(backupData.companySettings))
+              .catch((err) => {
+                console.error('Error restoring companySettings:', err);
+                throw err;
+              })
           : Promise.resolve(),
       ]);
 
@@ -507,7 +516,11 @@ export class PayrollConfigurationService {
    *    GENERIC APPROVAL HELPERS
    * ========================== */
 
-  private async approveConfig(model: Model<any>, id: string, approvedBy?: string) {
+  private async approveConfig(
+    model: Model<any>,
+    id: string,
+    approvedBy?: string,
+  ) {
     const updated = await model.findByIdAndUpdate(
       id,
       {
@@ -525,7 +538,11 @@ export class PayrollConfigurationService {
     return updated;
   }
 
-  private async rejectConfig(model: Model<any>, id: string, approvedBy?: string) {
+  private async rejectConfig(
+    model: Model<any>,
+    id: string,
+    approvedBy?: string,
+  ) {
     const updated = await model.findByIdAndUpdate(
       id,
       {
@@ -592,8 +609,8 @@ export class PayrollConfigurationService {
   }
 
   /* ==========================
- *          TAX RULES
- * ========================== */
+   *          TAX RULES
+   * ========================== */
 
   async createTaxRule(dto: any) {
     const rate = Number(dto.rate);
@@ -614,7 +631,6 @@ export class PayrollConfigurationService {
     }).save();
   }
 
-
   async getTaxRules() {
     return this.taxRulesModel.find().sort({ createdAt: -1 }).lean().exec();
   }
@@ -623,24 +639,35 @@ export class PayrollConfigurationService {
     const update: any = {
       ...(dto.code !== undefined ? { code: dto.code.trim() } : {}),
       ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
-      ...(dto.description !== undefined ? { description: dto.description } : {}),
-      ...(dto.bracketFrom !== undefined ? { bracketFrom: Number(dto.bracketFrom) } : {}),
-      ...(dto.bracketTo !== undefined ? { bracketTo: Number(dto.bracketTo) } : {}),
+      ...(dto.description !== undefined
+        ? { description: dto.description }
+        : {}),
+      ...(dto.bracketFrom !== undefined
+        ? { bracketFrom: Number(dto.bracketFrom) }
+        : {}),
+      ...(dto.bracketTo !== undefined
+        ? { bracketTo: Number(dto.bracketTo) }
+        : {}),
       ...(dto.rate !== undefined ? { rate: Number(dto.rate) } : {}),
     };
 
     // prevent NaN from ever going to mongoose
-    if (update.rate !== undefined && (Number.isNaN(update.rate) || update.rate < 0)) {
+    if (
+      update.rate !== undefined &&
+      (Number.isNaN(update.rate) || update.rate < 0)
+    ) {
       throw new NotFoundException('Invalid rate');
     }
 
-    const updated = await this.taxRulesModel.findByIdAndUpdate(id, update, { new: true });
+    const updated = await this.taxRulesModel.findByIdAndUpdate(id, update, {
+      new: true,
+    });
     if (!updated) throw new NotFoundException('Tax rule not found');
     return updated;
   }
   /* ==========================
- *          TAX RULES
- * ========================== */
+   *          TAX RULES
+   * ========================== */
 
   async deleteTaxRule(id: string) {
     const deleted = await this.taxRulesModel.findByIdAndDelete(id).exec();
@@ -655,8 +682,6 @@ export class PayrollConfigurationService {
   rejectTaxRule(id: string, approvedBy?: string) {
     return this.rejectConfig(this.taxRulesModel, id, approvedBy);
   }
-
-
 
   /* ==========================
    *       BENEFIT APPROVAL

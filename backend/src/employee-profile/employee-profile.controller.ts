@@ -21,7 +21,11 @@ import { CreateEmployeeProfileDto } from './dto/create-employee-profile.dto';
 import { UpdateEmployeeProfileDto } from './dto/update-employee-profile.dto';
 import { CreateQualificationDto } from './dto/qualification.dto';
 import { AssignRoleDto, UpdateRoleDto } from './dto/role.dto';
-import { CreateCandidateDto, UpdateCandidateStatusDto, ConvertCandidateToEmployeeDto } from './dto/candidate.dto';
+import {
+  CreateCandidateDto,
+  UpdateCandidateStatusDto,
+  ConvertCandidateToEmployeeDto,
+} from './dto/candidate.dto';
 import { CreateChangeRequestDto } from './dto/change-request.dto';
 import { UpdateContactInfoDto } from './dto/update-contact-info.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -31,7 +35,9 @@ import { ALL_EMPLOYEE_ROLES } from './enums/employee-profile.enums';
 
 @Controller('api/employee-profile')
 export class EmployeeProfileController {
-  constructor(private readonly employeeProfileService: EmployeeProfileService) { }
+  constructor(
+    private readonly employeeProfileService: EmployeeProfileService,
+  ) {}
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,7 +51,12 @@ export class EmployeeProfileController {
   async getProfile(@Req() req: any) {
     try {
       const userId = req.user?.userId;
-      console.log('[GET PROFILE] Request for user:', userId, 'Role:', req.user?.role);
+      console.log(
+        '[GET PROFILE] Request for user:',
+        userId,
+        'Role:',
+        req.user?.role,
+      );
 
       if (!userId) {
         throw new Error('User ID not found in request');
@@ -103,14 +114,23 @@ export class EmployeeProfileController {
   @Post('candidates/:id/convert')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('HR Manager', 'HR Admin')
-  async convertCandidateToEmployee(@Param('id') id: string, @Body() convertDto: ConvertCandidateToEmployeeDto) {
-    return this.employeeProfileService.convertCandidateToEmployee(id, convertDto);
+  async convertCandidateToEmployee(
+    @Param('id') id: string,
+    @Body() convertDto: ConvertCandidateToEmployeeDto,
+  ) {
+    return this.employeeProfileService.convertCandidateToEmployee(
+      id,
+      convertDto,
+    );
   }
 
   @Patch('candidates/:id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('Recruiter', 'HR Manager')
-  async updateCandidateStatus(@Param('id') id: string, @Body() updateDto: UpdateCandidateStatusDto) {
+  async updateCandidateStatus(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateCandidateStatusDto,
+  ) {
     return this.employeeProfileService.updateCandidateStatus(id, updateDto);
   }
 
@@ -124,9 +144,15 @@ export class EmployeeProfileController {
   @Post('change-requests')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(...ALL_EMPLOYEE_ROLES)
-  async createChangeRequest(@Req() req: any, @Body() createDto: CreateChangeRequestDto) {
+  async createChangeRequest(
+    @Req() req: any,
+    @Body() createDto: CreateChangeRequestDto,
+  ) {
     const employeeId = req.user?.userId;
-    return this.employeeProfileService.createChangeRequest(employeeId, createDto);
+    return this.employeeProfileService.createChangeRequest(
+      employeeId,
+      createDto,
+    );
   }
 
   @Patch('change-requests/:id/approve')
@@ -146,11 +172,17 @@ export class EmployeeProfileController {
   @Patch(':id/contact')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(...ALL_EMPLOYEE_ROLES)
-  async updateContactInfo(@Param('id') id: string, @Body() updateDto: UpdateContactInfoDto, @Req() req: any) {
+  async updateContactInfo(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateContactInfoDto,
+    @Req() req: any,
+  ) {
     // Employees can only update their own contact info, HR roles can update anyone's
     const userId = req.user?.userId;
     const userRoles = req.user?.roles || [];
-    const isHR = userRoles.some((role: string) => ['HR Admin', 'HR Manager', 'System Admin'].includes(role));
+    const isHR = userRoles.some((role: string) =>
+      ['HR Admin', 'HR Manager', 'System Admin'].includes(role),
+    );
 
     if (!isHR && userId !== id) {
       throw new Error('You can only update your own contact information');
@@ -166,12 +198,14 @@ export class EmployeeProfileController {
   async uploadProfilePicture(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Req() req: any
+    @Req() req: any,
   ) {
     // Employees can only upload their own picture, HR roles can upload for anyone
     const userId = req.user?.userId;
     const userRoles = req.user?.roles || [];
-    const isHR = userRoles.some((role: string) => ['HR Admin', 'HR Manager', 'System Admin'].includes(role));
+    const isHR = userRoles.some((role: string) =>
+      ['HR Admin', 'HR Manager', 'System Admin'].includes(role),
+    );
 
     if (!isHR && userId !== id) {
       throw new Error('You can only upload your own profile picture');
@@ -185,10 +219,17 @@ export class EmployeeProfileController {
   }
 
   @Get('uploads/profile-pictures/:filename')
-  async getProfilePicture(@Param('filename') filename: string, @Res() res: Response) {
+  async getProfilePicture(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ) {
     const fs = require('fs');
     const path = require('path');
-    const filePath = path.join(process.cwd(), 'uploads/profile-pictures', filename);
+    const filePath = path.join(
+      process.cwd(),
+      'uploads/profile-pictures',
+      filename,
+    );
 
     if (fs.existsSync(filePath)) {
       res.sendFile(filePath);
@@ -207,7 +248,10 @@ export class EmployeeProfileController {
   @Post(':id/qualifications')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(...ALL_EMPLOYEE_ROLES)
-  async addQualification(@Param('id') id: string, @Body() createDto: CreateQualificationDto) {
+  async addQualification(
+    @Param('id') id: string,
+    @Body() createDto: CreateQualificationDto,
+  ) {
     return this.employeeProfileService.addQualification(id, createDto);
   }
 
@@ -251,7 +295,8 @@ export class EmployeeProfileController {
   @Roles(...ALL_EMPLOYEE_ROLES)
   @Header('Content-Type', 'application/pdf')
   async exportEmployeePdf(@Param('id') id: string, @Res() res: Response) {
-    const pdfBuffer = await this.employeeProfileService.exportEmployeeProfileToPdf(id);
+    const pdfBuffer =
+      await this.employeeProfileService.exportEmployeeProfileToPdf(id);
     res.set({
       'Content-Disposition': `attachment; filename=employee-profile-${id}.pdf`,
     });
@@ -261,15 +306,24 @@ export class EmployeeProfileController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(...ALL_EMPLOYEE_ROLES)
-  async updateEmployee(@Param('id') id: string, @Body() updateDto: UpdateEmployeeProfileDto) {
+  async updateEmployee(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateEmployeeProfileDto,
+  ) {
     return this.employeeProfileService.updateEmployeeProfile(id, updateDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('HR Admin', 'HR Manager')
-  async deactivateEmployee(@Param('id') id: string, @Body() body: { status: string }) {
-    return this.employeeProfileService.deactivateEmployee(id, body.status as any);
+  async deactivateEmployee(
+    @Param('id') id: string,
+    @Body() body: { status: string },
+  ) {
+    return this.employeeProfileService.deactivateEmployee(
+      id,
+      body.status as any,
+    );
   }
 
   @Delete(':id/permanent')

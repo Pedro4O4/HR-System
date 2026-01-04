@@ -9,7 +9,11 @@ export class configBackup {
   @Prop({ required: true })
   backupType: string; // e.g. "PAYROLL_CONFIGURATION"
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Employee.name, required: false })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Employee.name,
+    required: false,
+  })
   triggeredBy?: mongoose.Types.ObjectId; // admin who triggered backup (optional)
 
   @Prop({ type: mongoose.Schema.Types.Mixed, required: true })

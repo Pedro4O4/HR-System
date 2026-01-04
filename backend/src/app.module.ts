@@ -23,7 +23,9 @@ import { NotificationModule } from './notification/notification.module';
       envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/hr-system'),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/hr-system',
+    ),
     AuthModule,
     NotificationModule,
     TimeManagementModule,
@@ -39,4 +41,4 @@ import { NotificationModule } from './notification/notification.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

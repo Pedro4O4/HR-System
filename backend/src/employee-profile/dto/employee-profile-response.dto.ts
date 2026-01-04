@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EmployeeStatus, ContractType, WorkType, Gender, MaritalStatus } from '../enums/employee-profile.enums';
+import {
+  EmployeeStatus,
+  ContractType,
+  WorkType,
+  Gender,
+  MaritalStatus,
+} from '../enums/employee-profile.enums';
 
 export class EmployeeProfileResponseDto {
   @ApiProperty({

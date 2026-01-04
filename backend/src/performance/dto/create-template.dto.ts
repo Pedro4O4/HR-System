@@ -1,105 +1,116 @@
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { AppraisalRatingScaleType, AppraisalTemplateType } from '../enums/performance.enums';
+import {
+  AppraisalRatingScaleType,
+  AppraisalTemplateType,
+} from '../enums/performance.enums';
 
 export class RatingScaleDefinitionDto {
-    @IsEnum(AppraisalRatingScaleType)
-    @IsNotEmpty()
-    type: AppraisalRatingScaleType;
+  @IsEnum(AppraisalRatingScaleType)
+  @IsNotEmpty()
+  type: AppraisalRatingScaleType;
 
-    @IsNotEmpty()
-    min: number;
+  @IsNotEmpty()
+  min: number;
 
-    @IsNotEmpty()
-    max: number;
+  @IsNotEmpty()
+  max: number;
 
-    @IsOptional()
-    step?: number;
+  @IsOptional()
+  step?: number;
 
-    @IsArray()
-    @IsOptional()
-    labels?: string[];
+  @IsArray()
+  @IsOptional()
+  labels?: string[];
 }
 
 export class EvaluationCriterionDto {
-    @IsString()
-    @IsNotEmpty()
-    key: string;
+  @IsString()
+  @IsNotEmpty()
+  key: string;
 
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @IsString()
-    @IsOptional()
-    details?: string;
+  @IsString()
+  @IsOptional()
+  details?: string;
 
-    @IsOptional()
-    weight?: number;
+  @IsOptional()
+  weight?: number;
 
-    @IsOptional()
-    maxScore?: number;
+  @IsOptional()
+  maxScore?: number;
 
-    @IsBoolean()
-    @IsOptional()
-    required?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  required?: boolean;
 }
 
 export class TemplateSectionDto {
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @IsString()
-    @IsOptional()
-    description?: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-    @IsNotEmpty()
-    weight: number;
+  @IsNotEmpty()
+  weight: number;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => EvaluationCriterionDto)
-    criteria: EvaluationCriterionDto[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => EvaluationCriterionDto)
+  criteria: EvaluationCriterionDto[];
 }
 
 export class CreateTemplateDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsString()
-    @IsOptional()
-    description?: string;
+  @IsString()
+  @IsOptional()
+  description?: string;
 
-    @IsEnum(AppraisalTemplateType)
-    @IsNotEmpty()
-    templateType: AppraisalTemplateType;
+  @IsEnum(AppraisalTemplateType)
+  @IsNotEmpty()
+  templateType: AppraisalTemplateType;
 
-    @ValidateNested()
-    @Type(() => RatingScaleDefinitionDto)
-    @IsNotEmpty()
-    ratingScale: RatingScaleDefinitionDto;
+  @ValidateNested()
+  @Type(() => RatingScaleDefinitionDto)
+  @IsNotEmpty()
+  ratingScale: RatingScaleDefinitionDto;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => TemplateSectionDto)
-    @IsNotEmpty()
-    sections: TemplateSectionDto[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TemplateSectionDto)
+  @IsNotEmpty()
+  sections: TemplateSectionDto[];
 
-    @IsString()
-    @IsOptional()
-    instructions?: string;
+  @IsString()
+  @IsOptional()
+  instructions?: string;
 
-    @IsArray()
-    @IsOptional()
-    applicableDepartmentIds?: string[];
+  @IsArray()
+  @IsOptional()
+  applicableDepartmentIds?: string[];
 
-    @IsArray()
-    @IsOptional()
-    applicablePositionIds?: string[];
+  @IsArray()
+  @IsOptional()
+  applicablePositionIds?: string[];
 
-    @IsBoolean()
-    @IsOptional()
-    isActive?: boolean;
+  @IsBoolean()
+  @IsOptional()
+  isActive?: boolean;
 }

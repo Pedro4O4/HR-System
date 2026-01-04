@@ -42,4 +42,4 @@ import { NotificationModule } from '../notification/notification.module';
   controllers: [OrganizationStructureController],
   providers: [OrganizationStructureService],
 })
-export class OrganizationStructureModule { }
+export class OrganizationStructureModule {}

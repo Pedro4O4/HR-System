@@ -127,7 +127,9 @@ PositionSchema.pre('findOneAndUpdate', async function (next) {
     );
 
     // Only override if NOT explicitly provided in the update
-    const manualReportsTo = update.reportsToPositionId || (update.$set && update.$set.reportsToPositionId);
+    const manualReportsTo =
+      update.reportsToPositionId ||
+      (update.$set && update.$set.reportsToPositionId);
 
     if (!manualReportsTo) {
       if (update.$set) {

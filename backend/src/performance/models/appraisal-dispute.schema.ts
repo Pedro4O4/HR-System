@@ -10,7 +10,6 @@ export type AppraisalDisputeDocument = HydratedDocument<AppraisalDispute>;
 
 @Schema({ collection: 'appraisal_disputes', timestamps: true })
 export class AppraisalDispute {
-
   @Prop({ type: Types.ObjectId, ref: 'AppraisalRecord', required: true })
   appraisalId: Types.ObjectId;
 

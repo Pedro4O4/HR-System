@@ -3,7 +3,8 @@ import { HydratedDocument, Types } from 'mongoose';
 import { ProfileChangeStatus } from '../enums/employee-profile.enums';
 import { EmployeeProfile } from './employee-profile.schema';
 
-export type EmployeeProfileChangeRequestDocument = HydratedDocument<EmployeeProfileChangeRequest>;
+export type EmployeeProfileChangeRequestDocument =
+  HydratedDocument<EmployeeProfileChangeRequest>;
 
 @Schema({ collection: 'employee_profile_change_requests', timestamps: true })
 export class EmployeeProfileChangeRequest {

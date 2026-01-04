@@ -15,10 +15,7 @@ import {
 } from './models/insuranceBrackets.schema';
 import { taxRules, taxRulesSchema } from './models/taxRules.schema';
 import { benefit, benefitSchema } from './models/benefit.schema';
-import {
-  signingBonus,
-  signingBonusSchema,
-} from './models/signingBonus.schema';
+import { signingBonus, signingBonusSchema } from './models/signingBonus.schema';
 import {
   payrollPolicies,
   payrollPoliciesSchema,
@@ -27,10 +24,7 @@ import {
   CompanyWideSettings,
   CompanyWideSettingsSchema,
 } from './models/CompanyWideSettings.schema';
-import {
-  configBackup,
-  configBackupSchema,
-} from './models/configBackup.schema';
+import { configBackup, configBackupSchema } from './models/configBackup.schema';
 
 @Module({
   imports: [

@@ -51,7 +51,8 @@ import { extname } from 'path';
       storage: diskStorage({
         destination: './uploads/profile-pictures',
         filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           cb(null, `profile-${uniqueSuffix}${ext}`);
         },
@@ -59,7 +60,9 @@ import { extname } from 'path';
       fileFilter: (req, file, cb) => {
         const allowedTypes = /jpeg|jpg|png|webp/;
         const mimeType = allowedTypes.test(file.mimetype);
-        const extName = allowedTypes.test(extname(file.originalname).toLowerCase());
+        const extName = allowedTypes.test(
+          extname(file.originalname).toLowerCase(),
+        );
 
         if (mimeType && extName) {
           return cb(null, true);
@@ -78,4 +81,4 @@ import { extname } from 'path';
     MongooseModule, // Export for use by other modules that need to populate EmployeeProfile
   ],
 })
-export class EmployeeProfileModule { }
+export class EmployeeProfileModule {}

@@ -7,7 +7,7 @@ import { LoginResponseDto } from './dto/login-response.dto';
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -29,7 +29,15 @@ export class AuthController {
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Change password' })
-  @ApiBody({ schema: { type: 'object', properties: { userId: { type: 'string' }, newPassword: { type: 'string' } } } })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        userId: { type: 'string' },
+        newPassword: { type: 'string' },
+      },
+    },
+  })
   @ApiResponse({ status: 200, description: 'Password changed successfully' })
   async changePassword(@Body() body: { userId: string; newPassword: string }) {
     return this.authService.changePassword(body.userId, body.newPassword);

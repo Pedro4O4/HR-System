@@ -1,38 +1,44 @@
-import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class FeedbackCriterionDto {
-    @IsString()
-    @IsNotEmpty()
-    name: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @IsNotEmpty()
-    managerRating: number;
+  @IsNotEmpty()
+  managerRating: number;
 
-    @IsString()
-    @IsOptional()
-    managerComment?: string;
+  @IsString()
+  @IsOptional()
+  managerComment?: string;
 }
 
 export class FeedbackSectionDto {
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => FeedbackCriterionDto)
-    criteria: FeedbackCriterionDto[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FeedbackCriterionDto)
+  criteria: FeedbackCriterionDto[];
 }
 
 export class SubmitFeedbackDto {
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => FeedbackSectionDto)
-    @IsNotEmpty()
-    sections: FeedbackSectionDto[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => FeedbackSectionDto)
+  @IsNotEmpty()
+  sections: FeedbackSectionDto[];
 
-    @IsString()
-    @IsOptional()
-    managerFeedback?: string;
+  @IsString()
+  @IsOptional()
+  managerFeedback?: string;
 }

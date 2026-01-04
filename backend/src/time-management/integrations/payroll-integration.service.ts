@@ -2,10 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 
 /**
  * PAYROLL MODULE INTEGRATION SERVICE
- * 
- * Purpose: Ensure Payroll receives validated work hours, overtime, short time, 
+ *
+ * Purpose: Ensure Payroll receives validated work hours, overtime, short time,
  * lateness penalties, and exceptions from Time Management.
- * 
+ *
  * TODO: Connect to actual Payroll module when implemented
  */
 
@@ -22,7 +22,13 @@ export interface PayrollDailyPayload {
 }
 
 export interface PayrollException {
-  type: 'REPEATED_LATENESS' | 'MISSED_PUNCH' | 'MANUAL_CORRECTION' | 'ESCALATED_REQUEST' | 'EARLY_DEPARTURE' | 'UNAUTHORIZED_ABSENCE';
+  type:
+    | 'REPEATED_LATENESS'
+    | 'MISSED_PUNCH'
+    | 'MANUAL_CORRECTION'
+    | 'ESCALATED_REQUEST'
+    | 'EARLY_DEPARTURE'
+    | 'UNAUTHORIZED_ABSENCE';
   description: string;
   minutes?: number;
   severity: 'LOW' | 'MEDIUM' | 'HIGH';
@@ -43,13 +49,17 @@ export class PayrollIntegrationService {
   /**
    * Receives aggregated attendance data and sends to Payroll module
    * Called by the daily cron job at midnight
-   * 
+   *
    * @param data - Array of daily payloads per employee
    * @returns Sync result with success/failure counts
    */
-  async receiveAttendanceData(data: PayrollDailyPayload[]): Promise<PayrollSyncResult> {
+  async receiveAttendanceData(
+    data: PayrollDailyPayload[],
+  ): Promise<PayrollSyncResult> {
     // TODO: Replace with actual Payroll module API call when implemented
-    this.logger.log(`[PAYROLL STUB] Receiving attendance data for ${data.length} employees`);
+    this.logger.log(
+      `[PAYROLL STUB] Receiving attendance data for ${data.length} employees`,
+    );
 
     const result: PayrollSyncResult = {
       success: true,
@@ -80,21 +90,25 @@ export class PayrollIntegrationService {
 
         result.syncedCount++;
       } catch (error) {
-        result.errors.push(`Failed to sync employee ${payload.employeeId}: ${error.message}`);
+        result.errors.push(
+          `Failed to sync employee ${payload.employeeId}: ${error.message}`,
+        );
         result.failedCount++;
       }
     }
 
     result.success = result.failedCount === 0;
-    
-    this.logger.log(`[PAYROLL STUB] Sync completed: ${result.syncedCount} success, ${result.failedCount} failed`);
-    
+
+    this.logger.log(
+      `[PAYROLL STUB] Sync completed: ${result.syncedCount} success, ${result.failedCount} failed`,
+    );
+
     return result;
   }
 
   /**
    * Get payroll cut-off date for escalation warnings
-   * 
+   *
    * @returns The next payroll cut-off date
    */
   async getPayrollCutoffDate(): Promise<Date> {
@@ -103,15 +117,17 @@ export class PayrollIntegrationService {
     const now = new Date();
     const cutoff = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     cutoff.setHours(23, 59, 59, 999);
-    
-    this.logger.debug(`[PAYROLL STUB] Payroll cut-off date: ${cutoff.toISOString()}`);
-    
+
+    this.logger.debug(
+      `[PAYROLL STUB] Payroll cut-off date: ${cutoff.toISOString()}`,
+    );
+
     return cutoff;
   }
 
   /**
    * Check if payroll is locked for a specific period
-   * 
+   *
    * @param date - Date to check
    * @returns Whether payroll is locked for that date
    */
@@ -121,17 +137,19 @@ export class PayrollIntegrationService {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
-    
+
     const isLocked = date < startOfMonth;
-    
-    this.logger.debug(`[PAYROLL STUB] Payroll locked for ${date.toDateString()}: ${isLocked}`);
-    
+
+    this.logger.debug(
+      `[PAYROLL STUB] Payroll locked for ${date.toDateString()}: ${isLocked}`,
+    );
+
     return isLocked;
   }
 
   /**
    * Get days until payroll cut-off for escalation warnings
-   * 
+   *
    * @returns Number of days until cut-off
    */
   async getDaysUntilCutoff(): Promise<number> {
@@ -139,7 +157,7 @@ export class PayrollIntegrationService {
     const now = new Date();
     const diffTime = cutoff.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return Math.max(0, diffDays);
   }
 }

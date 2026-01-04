@@ -3,7 +3,9 @@ import { CreateEmployeeProfileDto } from './create-employee-profile.dto';
 import { IsOptional, IsEnum } from 'class-validator';
 import { EmployeeStatus } from '../enums/employee-profile.enums';
 
-export class UpdateEmployeeProfileDto extends PartialType(CreateEmployeeProfileDto) {
+export class UpdateEmployeeProfileDto extends PartialType(
+  CreateEmployeeProfileDto,
+) {
   @ApiPropertyOptional({
     example: 'ACTIVE',
     enum: EmployeeStatus,

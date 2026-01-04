@@ -45,7 +45,9 @@ export enum SystemRole {
   HR_ADMIN = 'HR Admin',
 }
 
-export const ALL_EMPLOYEE_ROLES = Object.values(SystemRole).filter(role => role !== SystemRole.JOB_CANDIDATE);
+export const ALL_EMPLOYEE_ROLES = Object.values(SystemRole).filter(
+  (role) => role !== SystemRole.JOB_CANDIDATE,
+);
 
 export enum CandidateStatus {
   APPLIED = 'APPLIED',

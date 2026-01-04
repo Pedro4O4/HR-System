@@ -7,10 +7,11 @@ export enum PunchPolicyType {
 }
 
 export class UpdatePunchPolicyDto {
-  @ApiProperty({ 
-    example: 'MULTIPLE', 
+  @ApiProperty({
+    example: 'MULTIPLE',
     enum: PunchPolicyType,
-    description: 'Punch policy: MULTIPLE allows multiple clock-ins/outs, FIRST_LAST only counts first in and last out'
+    description:
+      'Punch policy: MULTIPLE allows multiple clock-ins/outs, FIRST_LAST only counts first in and last out',
   })
   @IsEnum(PunchPolicyType)
   policy: PunchPolicyType;

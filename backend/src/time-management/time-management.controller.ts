@@ -10,7 +10,12 @@ import {
   Request,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { TimeManagementService } from './time-management.service';
 import {
   CreateShiftTypeDto,
@@ -44,7 +49,7 @@ import { SystemRole } from '../employee-profile/enums/employee-profile.enums';
 @Controller('time-management')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TimeManagementController {
-  constructor(private readonly timeManagementService: TimeManagementService) { }
+  constructor(private readonly timeManagementService: TimeManagementService) {}
 
   // ==================== SHIFT TYPES ====================
 
@@ -63,7 +68,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get all shift types' })
   @ApiResponse({ status: 200, description: 'List of shift types' })
@@ -78,7 +83,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get shift type by ID' })
   @ApiResponse({ status: 200, description: 'Shift type details' })
@@ -110,7 +115,9 @@ export class TimeManagementController {
 
   @Post('shifts/assign')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN, SystemRole.HR_MANAGER)
-  @ApiOperation({ summary: 'Assign a shift to employee(s), department, or position' })
+  @ApiOperation({
+    summary: 'Assign a shift to employee(s), department, or position',
+  })
   @ApiResponse({ status: 201, description: 'Shift assigned successfully' })
   assignShift(@Body() dto: AssignShiftDto) {
     return this.timeManagementService.assignShift(dto);
@@ -123,18 +130,22 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get all shift assignments' })
   @ApiResponse({ status: 200, description: 'List of shift assignments' })
   getShifts(@Request() req) {
     // Department Heads can only see their department's shifts
     if (req.user.role === SystemRole.DEPARTMENT_HEAD && req.user.departmentId) {
-      return this.timeManagementService.getShifts({ departmentId: req.user.departmentId });
+      return this.timeManagementService.getShifts({
+        departmentId: req.user.departmentId,
+      });
     }
     // Department Employees can only see their own shifts
     if (req.user.role === SystemRole.DEPARTMENT_EMPLOYEE) {
-      return this.timeManagementService.getShifts({ employeeId: req.user.userId });
+      return this.timeManagementService.getShifts({
+        employeeId: req.user.userId,
+      });
     }
     return this.timeManagementService.getShifts();
   }
@@ -146,7 +157,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get shift assignment by ID' })
   @ApiResponse({ status: 200, description: 'Shift assignment details' })
@@ -162,13 +173,21 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
-  @ApiOperation({ summary: 'Get all shift assignments for a specific employee' })
-  @ApiResponse({ status: 200, description: 'List of employee shift assignments' })
+  @ApiOperation({
+    summary: 'Get all shift assignments for a specific employee',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of employee shift assignments',
+  })
   getShiftsByEmployee(@Param('employeeId') employeeId: string, @Request() req) {
     // Employees can only view their own shifts
-    if (req.user.role === SystemRole.DEPARTMENT_EMPLOYEE && req.user.userId !== employeeId) {
+    if (
+      req.user.role === SystemRole.DEPARTMENT_EMPLOYEE &&
+      req.user.userId !== employeeId
+    ) {
       throw new Error('Unauthorized: You can only view your own shifts');
     }
     return this.timeManagementService.getShiftsByEmployee(employeeId);
@@ -177,7 +196,10 @@ export class TimeManagementController {
   @Patch('shifts/:id')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN, SystemRole.HR_MANAGER)
   @ApiOperation({ summary: 'Update a shift assignment' })
-  @ApiResponse({ status: 200, description: 'Shift assignment updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Shift assignment updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Shift assignment not found' })
   updateShift(@Param('id') id: string, @Body() dto: UpdateShiftDto) {
     return this.timeManagementService.updateShift(id, dto);
@@ -186,16 +208,25 @@ export class TimeManagementController {
   @Patch('shifts/:id/status')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN, SystemRole.HR_MANAGER)
   @ApiOperation({ summary: 'Update shift assignment status' })
-  @ApiResponse({ status: 200, description: 'Shift status updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Shift status updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Shift assignment not found' })
-  updateShiftStatus(@Param('id') id: string, @Body() dto: UpdateShiftStatusDto) {
+  updateShiftStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateShiftStatusDto,
+  ) {
     return this.timeManagementService.updateShiftStatus(id, dto);
   }
 
   @Delete('shifts/:id')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Delete a shift assignment' })
-  @ApiResponse({ status: 200, description: 'Shift assignment deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Shift assignment deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Shift assignment not found' })
   deleteShift(@Param('id') id: string) {
     return this.timeManagementService.deleteShift(id);
@@ -206,7 +237,10 @@ export class TimeManagementController {
   @Post('schedule-rules')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Create a new schedule rule' })
-  @ApiResponse({ status: 201, description: 'Schedule rule created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Schedule rule created successfully',
+  })
   createScheduleRule(@Body() dto: CreateScheduleRuleDto) {
     return this.timeManagementService.createScheduleRule(dto);
   }
@@ -218,7 +252,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get all schedule rules' })
   @ApiResponse({ status: 200, description: 'List of schedule rules' })
@@ -233,7 +267,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get schedule rule by ID' })
   @ApiResponse({ status: 200, description: 'Schedule rule details' })
@@ -245,18 +279,30 @@ export class TimeManagementController {
   @Patch('schedule-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Update a schedule rule' })
-  @ApiResponse({ status: 200, description: 'Schedule rule updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule rule updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Schedule rule not found' })
-  updateScheduleRule(@Param('id') id: string, @Body() dto: UpdateScheduleRuleDto) {
+  updateScheduleRule(
+    @Param('id') id: string,
+    @Body() dto: UpdateScheduleRuleDto,
+  ) {
     return this.timeManagementService.updateScheduleRule(id, dto);
   }
 
   @Delete('schedule-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN)
   @ApiOperation({ summary: 'Delete a schedule rule' })
-  @ApiResponse({ status: 200, description: 'Schedule rule deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Schedule rule deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Schedule rule not found' })
-  @ApiResponse({ status: 400, description: 'Cannot delete schedule rule in use' })
+  @ApiResponse({
+    status: 400,
+    description: 'Cannot delete schedule rule in use',
+  })
   deleteScheduleRule(@Param('id') id: string) {
     return this.timeManagementService.deleteScheduleRule(id);
   }
@@ -318,7 +364,7 @@ export class TimeManagementController {
     SystemRole.PAYROLL_SPECIALIST,
     SystemRole.RECRUITER,
     SystemRole.FINANCE_STAFF,
-    SystemRole.LEGAL_POLICY_ADMIN
+    SystemRole.LEGAL_POLICY_ADMIN,
   )
   @ApiOperation({ summary: 'Clock in for the day' })
   @ApiResponse({ status: 201, description: 'Clock-in successful' })
@@ -338,7 +384,7 @@ export class TimeManagementController {
     SystemRole.PAYROLL_SPECIALIST,
     SystemRole.RECRUITER,
     SystemRole.FINANCE_STAFF,
-    SystemRole.LEGAL_POLICY_ADMIN
+    SystemRole.LEGAL_POLICY_ADMIN,
   )
   @ApiOperation({ summary: 'Clock out for the day' })
   @ApiResponse({ status: 201, description: 'Clock-out successful' })
@@ -355,14 +401,16 @@ export class TimeManagementController {
     SystemRole.DEPARTMENT_HEAD,
     SystemRole.DEPARTMENT_EMPLOYEE,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get all attendance records' })
   @ApiResponse({ status: 200, description: 'List of attendance records' })
   getAttendanceRecords(@Request() req) {
     // Department Employees can only see their own attendance
     if (req.user.role === SystemRole.DEPARTMENT_EMPLOYEE) {
-      return this.timeManagementService.getAttendanceByEmployee(req.user.userId);
+      return this.timeManagementService.getAttendanceByEmployee(
+        req.user.userId,
+      );
     }
     return this.timeManagementService.getAttendanceRecords();
   }
@@ -379,10 +427,10 @@ export class TimeManagementController {
     SystemRole.PAYROLL_SPECIALIST,
     SystemRole.RECRUITER,
     SystemRole.FINANCE_STAFF,
-    SystemRole.LEGAL_POLICY_ADMIN
+    SystemRole.LEGAL_POLICY_ADMIN,
   )
   @ApiOperation({ summary: 'Get my attendance for today' })
-  @ApiResponse({ status: 200, description: 'Today\'s attendance record' })
+  @ApiResponse({ status: 200, description: "Today's attendance record" })
   getMyAttendanceToday(@Request() req) {
     return this.timeManagementService.getMyAttendanceToday(req.user.userId);
   }
@@ -396,7 +444,7 @@ export class TimeManagementController {
     SystemRole.DEPARTMENT_HEAD,
     SystemRole.DEPARTMENT_EMPLOYEE,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get attendance record by ID' })
   @ApiResponse({ status: 200, description: 'Attendance record details' })
@@ -414,14 +462,25 @@ export class TimeManagementController {
     SystemRole.DEPARTMENT_HEAD,
     SystemRole.DEPARTMENT_EMPLOYEE,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get attendance records for a specific employee' })
-  @ApiResponse({ status: 200, description: 'List of employee attendance records' })
-  getAttendanceByEmployee(@Param('employeeId') employeeId: string, @Request() req) {
+  @ApiResponse({
+    status: 200,
+    description: 'List of employee attendance records',
+  })
+  getAttendanceByEmployee(
+    @Param('employeeId') employeeId: string,
+    @Request() req,
+  ) {
     // Department employees can only view their own attendance
-    if (req.user.role === SystemRole.DEPARTMENT_EMPLOYEE && req.user.userId !== employeeId) {
-      throw new ForbiddenException('You can only view your own attendance records');
+    if (
+      req.user.role === SystemRole.DEPARTMENT_EMPLOYEE &&
+      req.user.userId !== employeeId
+    ) {
+      throw new ForbiddenException(
+        'You can only view your own attendance records',
+      );
     }
     return this.timeManagementService.getAttendanceByEmployee(employeeId);
   }
@@ -429,9 +488,17 @@ export class TimeManagementController {
   // ==================== MANUAL CORRECTION (Story 6) ====================
 
   @Patch('attendance/:id')
-  @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN, SystemRole.HR_MANAGER, SystemRole.DEPARTMENT_HEAD)
+  @Roles(
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+    SystemRole.HR_MANAGER,
+    SystemRole.DEPARTMENT_HEAD,
+  )
   @ApiOperation({ summary: 'Manually correct an attendance record' })
-  @ApiResponse({ status: 200, description: 'Attendance corrected successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Attendance corrected successfully',
+  })
   @ApiResponse({ status: 404, description: 'Attendance record not found' })
   correctAttendance(@Param('id') id: string, @Body() dto: ManualCorrectionDto) {
     return this.timeManagementService.correctAttendance(id, dto);
@@ -446,7 +513,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get current punch policy' })
   @ApiResponse({ status: 200, description: 'Current punch policy setting' })
@@ -457,7 +524,10 @@ export class TimeManagementController {
   @Patch('settings/punch-policy')
   @Roles(SystemRole.SYSTEM_ADMIN)
   @ApiOperation({ summary: 'Update punch policy' })
-  @ApiResponse({ status: 200, description: 'Punch policy updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Punch policy updated successfully',
+  })
   updatePunchPolicy(@Body() dto: UpdatePunchPolicyDto) {
     return this.timeManagementService.updatePunchPolicy(dto);
   }
@@ -476,10 +546,13 @@ export class TimeManagementController {
     SystemRole.PAYROLL_SPECIALIST,
     SystemRole.RECRUITER,
     SystemRole.FINANCE_STAFF,
-    SystemRole.LEGAL_POLICY_ADMIN
+    SystemRole.LEGAL_POLICY_ADMIN,
   )
   @ApiOperation({ summary: 'Submit a correction request' })
-  @ApiResponse({ status: 201, description: 'Correction request submitted successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Correction request submitted successfully',
+  })
   createCorrectionRequest(@Body() dto: CreateCorrectionRequestDto) {
     return this.timeManagementService.createCorrectionRequest(dto);
   }
@@ -489,7 +562,7 @@ export class TimeManagementController {
     SystemRole.SYSTEM_ADMIN,
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
-    SystemRole.DEPARTMENT_HEAD
+    SystemRole.DEPARTMENT_HEAD,
   )
   @ApiOperation({ summary: 'Get all correction requests' })
   @ApiResponse({ status: 200, description: 'List of correction requests' })
@@ -502,10 +575,13 @@ export class TimeManagementController {
     SystemRole.SYSTEM_ADMIN,
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
-    SystemRole.DEPARTMENT_HEAD
+    SystemRole.DEPARTMENT_HEAD,
   )
   @ApiOperation({ summary: 'Get pending correction requests for approval' })
-  @ApiResponse({ status: 200, description: 'List of pending correction requests' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of pending correction requests',
+  })
   getPendingRequests() {
     return this.timeManagementService.getPendingRequests();
   }
@@ -522,7 +598,7 @@ export class TimeManagementController {
     SystemRole.PAYROLL_SPECIALIST,
     SystemRole.RECRUITER,
     SystemRole.FINANCE_STAFF,
-    SystemRole.LEGAL_POLICY_ADMIN
+    SystemRole.LEGAL_POLICY_ADMIN,
   )
   @ApiOperation({ summary: 'Get my correction requests' })
   @ApiResponse({ status: 200, description: 'List of my correction requests' })
@@ -537,7 +613,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get correction request by ID' })
   @ApiResponse({ status: 200, description: 'Correction request details' })
@@ -551,12 +627,18 @@ export class TimeManagementController {
     SystemRole.SYSTEM_ADMIN,
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
-    SystemRole.DEPARTMENT_HEAD
+    SystemRole.DEPARTMENT_HEAD,
   )
   @ApiOperation({ summary: 'Review (approve/reject) a correction request' })
-  @ApiResponse({ status: 200, description: 'Correction request reviewed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Correction request reviewed successfully',
+  })
   @ApiResponse({ status: 404, description: 'Correction request not found' })
-  reviewCorrectionRequest(@Param('id') id: string, @Body() dto: ReviewCorrectionDto) {
+  reviewCorrectionRequest(
+    @Param('id') id: string,
+    @Body() dto: ReviewCorrectionDto,
+  ) {
     return this.timeManagementService.reviewCorrectionRequest(id, dto);
   }
 
@@ -565,7 +647,10 @@ export class TimeManagementController {
   @Post('overtime-rules')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Create a new overtime rule' })
-  @ApiResponse({ status: 201, description: 'Overtime rule created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Overtime rule created successfully',
+  })
   createOvertimeRule(@Body() dto: CreateOvertimeRuleDto) {
     return this.timeManagementService.createOvertimeRule(dto);
   }
@@ -577,7 +662,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get all overtime rules' })
   @ApiResponse({ status: 200, description: 'List of overtime rules' })
@@ -592,7 +677,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get overtime rule by ID' })
   @ApiResponse({ status: 200, description: 'Overtime rule details' })
@@ -604,16 +689,25 @@ export class TimeManagementController {
   @Patch('overtime-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Update an overtime rule' })
-  @ApiResponse({ status: 200, description: 'Overtime rule updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Overtime rule updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Overtime rule not found' })
-  updateOvertimeRule(@Param('id') id: string, @Body() dto: UpdateOvertimeRuleDto) {
+  updateOvertimeRule(
+    @Param('id') id: string,
+    @Body() dto: UpdateOvertimeRuleDto,
+  ) {
     return this.timeManagementService.updateOvertimeRule(id, dto);
   }
 
   @Delete('overtime-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN)
   @ApiOperation({ summary: 'Delete an overtime rule' })
-  @ApiResponse({ status: 200, description: 'Overtime rule deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Overtime rule deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Overtime rule not found' })
   deleteOvertimeRule(@Param('id') id: string) {
     return this.timeManagementService.deleteOvertimeRule(id);
@@ -624,7 +718,10 @@ export class TimeManagementController {
   @Post('lateness-rules')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Create a new lateness rule' })
-  @ApiResponse({ status: 201, description: 'Lateness rule created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Lateness rule created successfully',
+  })
   createLatenessRule(@Body() dto: CreateLatenessRuleDto) {
     return this.timeManagementService.createLatenessRule(dto);
   }
@@ -636,7 +733,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get all lateness rules' })
   @ApiResponse({ status: 200, description: 'List of lateness rules' })
@@ -651,7 +748,7 @@ export class TimeManagementController {
     SystemRole.HR_MANAGER,
     SystemRole.HR_EMPLOYEE,
     SystemRole.DEPARTMENT_HEAD,
-    SystemRole.DEPARTMENT_EMPLOYEE
+    SystemRole.DEPARTMENT_EMPLOYEE,
   )
   @ApiOperation({ summary: 'Get lateness rule by ID' })
   @ApiResponse({ status: 200, description: 'Lateness rule details' })
@@ -663,16 +760,25 @@ export class TimeManagementController {
   @Patch('lateness-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
   @ApiOperation({ summary: 'Update a lateness rule' })
-  @ApiResponse({ status: 200, description: 'Lateness rule updated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lateness rule updated successfully',
+  })
   @ApiResponse({ status: 404, description: 'Lateness rule not found' })
-  updateLatenessRule(@Param('id') id: string, @Body() dto: UpdateLatenessRuleDto) {
+  updateLatenessRule(
+    @Param('id') id: string,
+    @Body() dto: UpdateLatenessRuleDto,
+  ) {
     return this.timeManagementService.updateLatenessRule(id, dto);
   }
 
   @Delete('lateness-rules/:id')
   @Roles(SystemRole.SYSTEM_ADMIN)
   @ApiOperation({ summary: 'Delete a lateness rule' })
-  @ApiResponse({ status: 200, description: 'Lateness rule deleted successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lateness rule deleted successfully',
+  })
   @ApiResponse({ status: 404, description: 'Lateness rule not found' })
   deleteLatenessRule(@Param('id') id: string) {
     return this.timeManagementService.deleteLatenessRule(id);
@@ -686,7 +792,7 @@ export class TimeManagementController {
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get overtime report for date range' })
   @ApiResponse({ status: 200, description: 'Overtime report data' })
@@ -700,7 +806,7 @@ export class TimeManagementController {
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get lateness report for date range' })
   @ApiResponse({ status: 200, description: 'Lateness report data' })
@@ -714,7 +820,7 @@ export class TimeManagementController {
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get time exceptions report for date range' })
   @ApiResponse({ status: 200, description: 'Time exceptions report data' })
@@ -728,7 +834,7 @@ export class TimeManagementController {
     SystemRole.HR_ADMIN,
     SystemRole.HR_MANAGER,
     SystemRole.PAYROLL_MANAGER,
-    SystemRole.PAYROLL_SPECIALIST
+    SystemRole.PAYROLL_SPECIALIST,
   )
   @ApiOperation({ summary: 'Get attendance report for date range' })
   @ApiResponse({ status: 200, description: 'Attendance report data' })

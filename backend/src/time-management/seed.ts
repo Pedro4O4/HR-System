@@ -6,16 +6,38 @@ import { latenessRuleSchema } from './models/lateness-rule.schema';
 import { OvertimeRuleSchema } from './models/overtime-rule.schema';
 import { ScheduleRuleSchema } from './models/schedule-rule.schema';
 import { ShiftAssignmentSchema } from './models/shift-assignment.schema';
-import { PunchPolicy, HolidayType, ShiftAssignmentStatus, ShiftTypeCategory } from './models/enums/index';
+import {
+  PunchPolicy,
+  HolidayType,
+  ShiftAssignmentStatus,
+  ShiftTypeCategory,
+} from './models/enums/index';
 
-export async function seedTimeManagement(connection: mongoose.Connection, employees: any, departments: any, positions: any) {
+export async function seedTimeManagement(
+  connection: mongoose.Connection,
+  employees: any,
+  departments: any,
+  positions: any,
+) {
   const ShiftTypeModel = connection.model('ShiftType', ShiftTypeSchema);
   const ShiftModel = connection.model('Shift', ShiftSchema);
   const HolidayModel = connection.model('Holiday', HolidaySchema);
-  const LatenessRuleModel = connection.model('LatenessRule', latenessRuleSchema);
-  const OvertimeRuleModel = connection.model('OvertimeRule', OvertimeRuleSchema);
-  const ScheduleRuleModel = connection.model('ScheduleRule', ScheduleRuleSchema);
-  const ShiftAssignmentModel = connection.model('ShiftAssignment', ShiftAssignmentSchema);
+  const LatenessRuleModel = connection.model(
+    'LatenessRule',
+    latenessRuleSchema,
+  );
+  const OvertimeRuleModel = connection.model(
+    'OvertimeRule',
+    OvertimeRuleSchema,
+  );
+  const ScheduleRuleModel = connection.model(
+    'ScheduleRule',
+    ScheduleRuleSchema,
+  );
+  const ShiftAssignmentModel = connection.model(
+    'ShiftAssignment',
+    ShiftAssignmentSchema,
+  );
 
   console.log('Clearing Time Management...');
   await ShiftTypeModel.deleteMany({});
@@ -28,7 +50,7 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
 
   // ==================== SHIFT TYPES (Enhanced) ====================
   console.log('Seeding Shift Types...');
-  
+
   const morningShiftType = await ShiftTypeModel.create({
     code: 'DAY-001',
     name: 'Standard Day Shift',
@@ -69,7 +91,7 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
     breakDurationMinutes: 180,
     splitParts: [
       { startTime: '07:00', endTime: '11:00' },
-      { startTime: '16:00', endTime: '20:00' }
+      { startTime: '16:00', endTime: '20:00' },
     ],
     isNightShift: false,
     isWeekendShift: false,
@@ -91,7 +113,8 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
     isWeekendShift: false,
     graceMinutesIn: 30,
     graceMinutesOut: 30,
-    description: 'Flexible working hours - clock in any time between 6 AM and 10 AM',
+    description:
+      'Flexible working hours - clock in any time between 6 AM and 10 AM',
     active: true,
   });
 
@@ -182,20 +205,90 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
   // ==================== HOLIDAYS ====================
   console.log('Seeding Holidays...');
   const holidays = [
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-01-01'), name: 'New Year\'s Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-01-20'), name: 'Martin Luther King Jr. Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-02-17'), name: 'Presidents Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-05-26'), name: 'Memorial Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-07-04'), name: 'Independence Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-09-01'), name: 'Labor Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-11-27'), name: 'Thanksgiving Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-11-28'), name: 'Day After Thanksgiving', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-12-25'), name: 'Christmas Day', active: true },
-    { type: HolidayType.NATIONAL, startDate: new Date('2025-12-26'), name: 'Boxing Day', active: true },
-    { type: HolidayType.ORGANIZATIONAL, startDate: new Date('2025-03-15'), name: 'Company Foundation Day', active: true },
-    { type: HolidayType.ORGANIZATIONAL, startDate: new Date('2025-06-15'), name: 'Annual Company Picnic', active: true },
-    { type: HolidayType.WEEKLY_REST, startDate: new Date('2025-01-04'), name: 'Saturday', active: true },
-    { type: HolidayType.WEEKLY_REST, startDate: new Date('2025-01-05'), name: 'Sunday', active: true },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-01-01'),
+      name: "New Year's Day",
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-01-20'),
+      name: 'Martin Luther King Jr. Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-02-17'),
+      name: 'Presidents Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-05-26'),
+      name: 'Memorial Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-07-04'),
+      name: 'Independence Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-09-01'),
+      name: 'Labor Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-11-27'),
+      name: 'Thanksgiving Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-11-28'),
+      name: 'Day After Thanksgiving',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-12-25'),
+      name: 'Christmas Day',
+      active: true,
+    },
+    {
+      type: HolidayType.NATIONAL,
+      startDate: new Date('2025-12-26'),
+      name: 'Boxing Day',
+      active: true,
+    },
+    {
+      type: HolidayType.ORGANIZATIONAL,
+      startDate: new Date('2025-03-15'),
+      name: 'Company Foundation Day',
+      active: true,
+    },
+    {
+      type: HolidayType.ORGANIZATIONAL,
+      startDate: new Date('2025-06-15'),
+      name: 'Annual Company Picnic',
+      active: true,
+    },
+    {
+      type: HolidayType.WEEKLY_REST,
+      startDate: new Date('2025-01-04'),
+      name: 'Saturday',
+      active: true,
+    },
+    {
+      type: HolidayType.WEEKLY_REST,
+      startDate: new Date('2025-01-05'),
+      name: 'Sunday',
+      active: true,
+    },
   ];
   await HolidayModel.insertMany(holidays);
   console.log('Holidays seeded: 14 holidays');
@@ -269,7 +362,8 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
     {
       code: 'OT-STD',
       name: 'Standard Overtime',
-      description: 'Standard overtime policy - 1.5x for weekday, 2x for weekend',
+      description:
+        'Standard overtime policy - 1.5x for weekday, 2x for weekend',
       minMinutesBeforeOvertime: 480,
       weekdayMultiplier: 1.5,
       weekendMultiplier: 2.0,
@@ -337,12 +431,28 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
   // ==================== SCHEDULE RULES ====================
   console.log('Seeding Schedule Rules...');
   const scheduleRules = [
-    { name: 'Standard Week (Mon-Fri)', pattern: 'Mon,Tue,Wed,Thu,Fri', active: true },
-    { name: 'Full Week (Mon-Sat)', pattern: 'Mon,Tue,Wed,Thu,Fri,Sat', active: true },
+    {
+      name: 'Standard Week (Mon-Fri)',
+      pattern: 'Mon,Tue,Wed,Thu,Fri',
+      active: true,
+    },
+    {
+      name: 'Full Week (Mon-Sat)',
+      pattern: 'Mon,Tue,Wed,Thu,Fri,Sat',
+      active: true,
+    },
     { name: 'Weekend Shift (Sat-Sun)', pattern: 'Sat,Sun', active: true },
-    { name: 'Alternating Weekends', pattern: 'Mon,Tue,Wed,Thu,Fri,Alt-Sat,Alt-Sun', active: true },
+    {
+      name: 'Alternating Weekends',
+      pattern: 'Mon,Tue,Wed,Thu,Fri,Alt-Sat,Alt-Sun',
+      active: true,
+    },
     { name: '4-Day Week', pattern: 'Mon,Tue,Wed,Thu', active: true },
-    { name: 'Compressed Week (4x10)', pattern: 'Mon,Tue,Wed,Thu (10-hour days)', active: true },
+    {
+      name: 'Compressed Week (4x10)',
+      pattern: 'Mon,Tue,Wed,Thu (10-hour days)',
+      active: true,
+    },
   ];
   await ScheduleRuleModel.insertMany(scheduleRules);
   console.log('Schedule Rules seeded: 6 rules');
@@ -354,12 +464,17 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
   endDate.setMonth(endDate.getMonth() + 12); // 1 year assignment
 
   const assignmentsCreated: any[] = [];
-  
+
   // Assign shifts to available employees
   if (employees) {
     const employeeKeys = Object.keys(employees);
-    const shiftOptions = [standardMorningShift, standardNightShift, splitShift, flexShift];
-    
+    const shiftOptions = [
+      standardMorningShift,
+      standardNightShift,
+      splitShift,
+      flexShift,
+    ];
+
     for (let i = 0; i < employeeKeys.length && i < 10; i++) {
       const emp = employees[employeeKeys[i]];
       if (emp && emp._id) {
@@ -374,10 +489,19 @@ export async function seedTimeManagement(connection: mongoose.Connection, employ
       }
     }
   }
-  console.log(`Shift Assignments seeded: ${assignmentsCreated.length} assignments`);
+  console.log(
+    `Shift Assignments seeded: ${assignmentsCreated.length} assignments`,
+  );
 
   return {
-    shiftTypes: { morningShiftType, nightShiftType, splitShiftType, flexibleShiftType, rotationalShiftType, weekendShiftType },
+    shiftTypes: {
+      morningShiftType,
+      nightShiftType,
+      splitShiftType,
+      flexibleShiftType,
+      rotationalShiftType,
+      weekendShiftType,
+    },
     shifts: { standardMorningShift, standardNightShift, splitShift, flexShift },
     assignments: assignmentsCreated,
   };

@@ -1,19 +1,49 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
 import { ShiftType, ShiftTypeDocument } from './models/shift-type.schema';
-import { ShiftAssignment, ShiftAssignmentDocument } from './models/shift-assignment.schema';
-import { ScheduleRule, ScheduleRuleDocument } from './models/schedule-rule.schema';
+import {
+  ShiftAssignment,
+  ShiftAssignmentDocument,
+} from './models/shift-assignment.schema';
+import {
+  ScheduleRule,
+  ScheduleRuleDocument,
+} from './models/schedule-rule.schema';
 import { Holiday, HolidayDocument } from './models/holiday.schema';
 import { NotificationLog } from './models/notification-log.schema';
-import { AttendanceRecord, AttendanceRecordDocument, Punch } from './models/attendance-record.schema';
-import { AttendanceCorrectionRequest, AttendanceCorrectionRequestDocument } from './models/attendance-correction-request.schema';
+import {
+  AttendanceRecord,
+  AttendanceRecordDocument,
+  Punch,
+} from './models/attendance-record.schema';
+import {
+  AttendanceCorrectionRequest,
+  AttendanceCorrectionRequestDocument,
+} from './models/attendance-correction-request.schema';
 import { Settings, SettingsDocument } from './models/settings.schema';
-import { EmployeeProfile, EmployeeProfileDocument } from '../employee-profile/models/employee-profile.schema';
-import { OvertimeRule, OvertimeRuleDocument } from './models/overtime-rule.schema';
-import { LatenessRule, LatenessRuleDocument } from './models/lateness-rule.schema';
-import { TimeException, TimeExceptionDocument } from './models/time-exception.schema';
+import {
+  EmployeeProfile,
+  EmployeeProfileDocument,
+} from '../employee-profile/models/employee-profile.schema';
+import {
+  OvertimeRule,
+  OvertimeRuleDocument,
+} from './models/overtime-rule.schema';
+import {
+  LatenessRule,
+  LatenessRuleDocument,
+} from './models/lateness-rule.schema';
+import {
+  TimeException,
+  TimeExceptionDocument,
+} from './models/time-exception.schema';
 import {
   CreateShiftTypeDto,
   UpdateShiftTypeDto,
@@ -36,11 +66,21 @@ import {
   UpdateLatenessRuleDto,
   GetReportDto,
 } from './dto';
-import { ShiftAssignmentStatus, PunchType, CorrectionRequestStatus, TimeExceptionType, TimeExceptionStatus } from './models/enums';
+import {
+  ShiftAssignmentStatus,
+  PunchType,
+  CorrectionRequestStatus,
+  TimeExceptionType,
+  TimeExceptionStatus,
+} from './models/enums';
 import { ReviewAction } from './dto/review-correction.dto';
 
 // Integration Services
-import { PayrollIntegrationService, PayrollDailyPayload, PayrollException } from './integrations/payroll-integration.service';
+import {
+  PayrollIntegrationService,
+  PayrollDailyPayload,
+  PayrollException,
+} from './integrations/payroll-integration.service';
 import { LeavesIntegrationService } from './integrations/leaves-integration.service';
 import { OrgStructureIntegrationService } from './integrations/org-structure-integration.service';
 import { NotificationIntegrationService } from './integrations/notification-integration.service';
@@ -51,25 +91,35 @@ export class TimeManagementService {
   private readonly logger = new Logger(TimeManagementService.name);
 
   constructor(
-    @InjectModel(ShiftType.name) private shiftTypeModel: Model<ShiftTypeDocument>,
-    @InjectModel(ShiftAssignment.name) private shiftAssignmentModel: Model<ShiftAssignmentDocument>,
-    @InjectModel(ScheduleRule.name) private scheduleRuleModel: Model<ScheduleRuleDocument>,
+    @InjectModel(ShiftType.name)
+    private shiftTypeModel: Model<ShiftTypeDocument>,
+    @InjectModel(ShiftAssignment.name)
+    private shiftAssignmentModel: Model<ShiftAssignmentDocument>,
+    @InjectModel(ScheduleRule.name)
+    private scheduleRuleModel: Model<ScheduleRuleDocument>,
     @InjectModel(Holiday.name) private holidayModel: Model<HolidayDocument>,
-    @InjectModel(NotificationLog.name) private notificationLogModel: Model<NotificationLog>,
-    @InjectModel(AttendanceRecord.name) private attendanceRecordModel: Model<AttendanceRecordDocument>,
-    @InjectModel(AttendanceCorrectionRequest.name) private correctionRequestModel: Model<AttendanceCorrectionRequestDocument>,
+    @InjectModel(NotificationLog.name)
+    private notificationLogModel: Model<NotificationLog>,
+    @InjectModel(AttendanceRecord.name)
+    private attendanceRecordModel: Model<AttendanceRecordDocument>,
+    @InjectModel(AttendanceCorrectionRequest.name)
+    private correctionRequestModel: Model<AttendanceCorrectionRequestDocument>,
     @InjectModel(Settings.name) private settingsModel: Model<SettingsDocument>,
-    @InjectModel(OvertimeRule.name) private overtimeRuleModel: Model<OvertimeRuleDocument>,
-    @InjectModel(LatenessRule.name) private latenessRuleModel: Model<LatenessRuleDocument>,
-    @InjectModel(TimeException.name) private timeExceptionModel: Model<TimeExceptionDocument>,
-    @InjectModel(EmployeeProfile.name) private employeeProfileModel: Model<EmployeeProfileDocument>,
+    @InjectModel(OvertimeRule.name)
+    private overtimeRuleModel: Model<OvertimeRuleDocument>,
+    @InjectModel(LatenessRule.name)
+    private latenessRuleModel: Model<LatenessRuleDocument>,
+    @InjectModel(TimeException.name)
+    private timeExceptionModel: Model<TimeExceptionDocument>,
+    @InjectModel(EmployeeProfile.name)
+    private employeeProfileModel: Model<EmployeeProfileDocument>,
     // Integration Services
     private readonly payrollIntegration: PayrollIntegrationService,
     private readonly leavesIntegration: LeavesIntegrationService,
     private readonly orgStructureIntegration: OrgStructureIntegrationService,
     private readonly notificationIntegration: NotificationIntegrationService,
     private readonly performanceIntegration: PerformanceIntegrationService,
-  ) { }
+  ) {}
 
   // ==================== SHIFT TYPES ====================
 
@@ -91,11 +141,9 @@ export class TimeManagementService {
   }
 
   async updateShiftType(id: string, dto: UpdateShiftTypeDto) {
-    const shiftType = await this.shiftTypeModel.findByIdAndUpdate(
-      id,
-      dto,
-      { new: true }
-    ).exec();
+    const shiftType = await this.shiftTypeModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
 
     if (!shiftType) {
       throw new NotFoundException(`Shift type with ID ${id} not found`);
@@ -107,7 +155,9 @@ export class TimeManagementService {
     // Check if shift type is in use
     const inUse = await this.shiftAssignmentModel.exists({ shiftId: id });
     if (inUse) {
-      throw new BadRequestException('Cannot delete shift type that is currently assigned to shifts');
+      throw new BadRequestException(
+        'Cannot delete shift type that is currently assigned to shifts',
+      );
     }
 
     const result = await this.shiftTypeModel.findByIdAndDelete(id).exec();
@@ -122,7 +172,9 @@ export class TimeManagementService {
   async assignShift(dto: AssignShiftDto) {
     // Validate that at least one of employeeId, departmentId, or positionId is provided
     if (!dto.employeeId && !dto.departmentId && !dto.positionId) {
-      throw new BadRequestException('At least one of employeeId, departmentId, or positionId must be provided');
+      throw new BadRequestException(
+        'At least one of employeeId, departmentId, or positionId must be provided',
+      );
     }
 
     const assignment = new this.shiftAssignmentModel({
@@ -191,11 +243,8 @@ export class TimeManagementService {
     if (dto.endDate) updateData.endDate = new Date(dto.endDate);
     if (dto.status) updateData.status = dto.status;
 
-    const shift = await this.shiftAssignmentModel.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    )
+    const shift = await this.shiftAssignmentModel
+      .findByIdAndUpdate(id, updateData, { new: true })
       .populate('employeeId', 'firstName lastName employeeNumber')
       .populate('departmentId', 'name')
       .populate('positionId', 'title')
@@ -211,11 +260,8 @@ export class TimeManagementService {
   }
 
   async updateShiftStatus(id: string, dto: UpdateShiftStatusDto) {
-    const shift = await this.shiftAssignmentModel.findByIdAndUpdate(
-      id,
-      { status: dto.status },
-      { new: true }
-    )
+    const shift = await this.shiftAssignmentModel
+      .findByIdAndUpdate(id, { status: dto.status }, { new: true })
       .populate('employeeId', 'firstName lastName employeeNumber')
       .populate('departmentId', 'name')
       .populate('positionId', 'title')
@@ -258,11 +304,9 @@ export class TimeManagementService {
   }
 
   async updateScheduleRule(id: string, dto: UpdateScheduleRuleDto) {
-    const rule = await this.scheduleRuleModel.findByIdAndUpdate(
-      id,
-      dto,
-      { new: true }
-    ).exec();
+    const rule = await this.scheduleRuleModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
 
     if (!rule) {
       throw new NotFoundException(`Schedule rule with ID ${id} not found`);
@@ -272,9 +316,13 @@ export class TimeManagementService {
 
   async deleteScheduleRule(id: string) {
     // Check if schedule rule is in use
-    const inUse = await this.shiftAssignmentModel.exists({ scheduleRuleId: id });
+    const inUse = await this.shiftAssignmentModel.exists({
+      scheduleRuleId: id,
+    });
     if (inUse) {
-      throw new BadRequestException('Cannot delete schedule rule that is currently in use');
+      throw new BadRequestException(
+        'Cannot delete schedule rule that is currently in use',
+      );
     }
 
     const result = await this.scheduleRuleModel.findByIdAndDelete(id).exec();
@@ -318,11 +366,9 @@ export class TimeManagementService {
     if (dto.name) updateData.name = dto.name;
     if (dto.active !== undefined) updateData.active = dto.active;
 
-    const holiday = await this.holidayModel.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    ).exec();
+    const holiday = await this.holidayModel
+      .findByIdAndUpdate(id, updateData, { new: true })
+      .exec();
 
     if (!holiday) {
       throw new NotFoundException(`Holiday with ID ${id} not found`);
@@ -368,9 +414,15 @@ export class TimeManagementService {
     const policyDoc = await this.settingsModel.findOne({ key: 'PUNCH_POLICY' });
     const policy = policyDoc?.value || 'MULTIPLE';
 
-    if (policy === 'FIRST_LAST' && record.punches.some(p => p.type === PunchType.IN)) {
+    if (
+      policy === 'FIRST_LAST' &&
+      record.punches.some((p) => p.type === PunchType.IN)
+    ) {
       // Already has a clock-in, don't add another
-      return { message: 'Already clocked in for today (FIRST_LAST policy)', record };
+      return {
+        message: 'Already clocked in for today (FIRST_LAST policy)',
+        record,
+      };
     }
 
     const punch: Punch = {
@@ -395,19 +447,24 @@ export class TimeManagementService {
     });
 
     if (!record) {
-      throw new BadRequestException('No clock-in record found for today. Please clock in first.');
+      throw new BadRequestException(
+        'No clock-in record found for today. Please clock in first.',
+      );
     }
 
     const lastPunch = record.punches[record.punches.length - 1];
     if (lastPunch?.type === PunchType.OUT) {
       // Check punch policy
-      const policyDoc = await this.settingsModel.findOne({ key: 'PUNCH_POLICY' });
+      const policyDoc = await this.settingsModel.findOne({
+        key: 'PUNCH_POLICY',
+      });
       const policy = policyDoc?.value || 'MULTIPLE';
 
       if (policy === 'FIRST_LAST') {
         // Update the last OUT punch
         record.punches[record.punches.length - 1].time = punchTime;
-        if (dto.location) record.punches[record.punches.length - 1].location = dto.location;
+        if (dto.location)
+          record.punches[record.punches.length - 1].location = dto.location;
         await record.save();
         return { message: 'Clock-out updated (FIRST_LAST policy)', record };
       }
@@ -432,10 +489,15 @@ export class TimeManagementService {
 
   private calculateWorkMinutes(punches: Punch[]): number {
     let totalMinutes = 0;
-    const sortedPunches = [...punches].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    const sortedPunches = [...punches].sort(
+      (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
+    );
 
     for (let i = 0; i < sortedPunches.length - 1; i += 2) {
-      if (sortedPunches[i].type === PunchType.IN && sortedPunches[i + 1]?.type === PunchType.OUT) {
+      if (
+        sortedPunches[i].type === PunchType.IN &&
+        sortedPunches[i + 1]?.type === PunchType.OUT
+      ) {
         const inTime = new Date(sortedPunches[i].time).getTime();
         const outTime = new Date(sortedPunches[i + 1].time).getTime();
         totalMinutes += (outTime - inTime) / (1000 * 60);
@@ -490,7 +552,7 @@ export class TimeManagementService {
     }
 
     // Replace punches with corrected ones
-    record.punches = dto.punches.map(p => ({
+    record.punches = dto.punches.map((p) => ({
       type: p.type === 'IN' ? PunchType.IN : PunchType.OUT,
       time: new Date(p.time),
     }));
@@ -512,7 +574,11 @@ export class TimeManagementService {
     const policy = await this.settingsModel.findOne({ key: 'PUNCH_POLICY' });
     if (!policy) {
       // Return default
-      return { key: 'PUNCH_POLICY', value: 'MULTIPLE', description: 'Default punch policy' };
+      return {
+        key: 'PUNCH_POLICY',
+        value: 'MULTIPLE',
+        description: 'Default punch policy',
+      };
     }
     return policy;
   }
@@ -522,11 +588,12 @@ export class TimeManagementService {
       { key: 'PUNCH_POLICY' },
       {
         value: dto.policy,
-        description: dto.policy === 'MULTIPLE'
-          ? 'Multiple punches allowed per day'
-          : 'Only first clock-in and last clock-out count'
+        description:
+          dto.policy === 'MULTIPLE'
+            ? 'Multiple punches allowed per day'
+            : 'Only first clock-in and last clock-out count',
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
     return policy;
   }
@@ -536,22 +603,28 @@ export class TimeManagementService {
   async createCorrectionRequest(dto: CreateCorrectionRequestDto) {
     // Lookup employee by employeeNumber (provided in dto.employeeId based on user feedback)
     // Or fallback to checking if it's an ObjectId for backward compatibility/safety
-    let employee = await this.employeeProfileModel.findOne({ employeeNumber: dto.employeeId });
+    let employee = await this.employeeProfileModel.findOne({
+      employeeNumber: dto.employeeId,
+    });
 
     if (!employee && Types.ObjectId.isValid(dto.employeeId)) {
       employee = await this.employeeProfileModel.findById(dto.employeeId);
     }
 
     if (!employee) {
-      throw new NotFoundException(`Employee with ID/Number ${dto.employeeId} not found`);
+      throw new NotFoundException(
+        `Employee with ID/Number ${dto.employeeId} not found`,
+      );
     }
 
     const request = new this.correctionRequestModel({
       employeeId: employee._id,
       employeeNumber: employee.employeeNumber,
-      attendanceRecordId: dto.attendanceRecordId ? new Types.ObjectId(dto.attendanceRecordId) : undefined,
+      attendanceRecordId: dto.attendanceRecordId
+        ? new Types.ObjectId(dto.attendanceRecordId)
+        : undefined,
       date: new Date(dto.date),
-      requestedPunches: dto.requestedPunches.map(p => ({
+      requestedPunches: dto.requestedPunches.map((p) => ({
         type: p.type === 'IN' ? PunchType.IN : PunchType.OUT,
         time: new Date(p.time),
       })),
@@ -565,7 +638,7 @@ export class TimeManagementService {
     if (dto.attendanceRecordId) {
       await this.attendanceRecordModel.findByIdAndUpdate(
         dto.attendanceRecordId,
-        { finalisedForPayroll: false }
+        { finalisedForPayroll: false },
       );
     }
 
@@ -623,9 +696,10 @@ export class TimeManagementService {
       throw new BadRequestException('This request has already been reviewed');
     }
 
-    request.status = dto.action === ReviewAction.APPROVE
-      ? CorrectionRequestStatus.APPROVED
-      : CorrectionRequestStatus.REJECTED;
+    request.status =
+      dto.action === ReviewAction.APPROVE
+        ? CorrectionRequestStatus.APPROVED
+        : CorrectionRequestStatus.REJECTED;
     request.reviewedBy = new Types.ObjectId(dto.reviewedBy);
     request.reviewComment = dto.comment;
     request.reviewedAt = new Date();
@@ -651,7 +725,9 @@ export class TimeManagementService {
       }
 
       attendanceRecord.punches = request.requestedPunches;
-      attendanceRecord.totalWorkMinutes = this.calculateWorkMinutes(attendanceRecord.punches);
+      attendanceRecord.totalWorkMinutes = this.calculateWorkMinutes(
+        attendanceRecord.punches,
+      );
       attendanceRecord.hasMissedPunch = false;
       attendanceRecord.finalisedForPayroll = true;
       attendanceRecord.correctedBy = new Types.ObjectId(dto.reviewedBy);
@@ -699,11 +775,9 @@ export class TimeManagementService {
   }
 
   async updateOvertimeRule(id: string, dto: UpdateOvertimeRuleDto) {
-    const rule = await this.overtimeRuleModel.findByIdAndUpdate(
-      id,
-      dto,
-      { new: true }
-    ).exec();
+    const rule = await this.overtimeRuleModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
 
     if (!rule) {
       throw new NotFoundException(`Overtime rule with ID ${id} not found`);
@@ -739,11 +813,9 @@ export class TimeManagementService {
   }
 
   async updateLatenessRule(id: string, dto: UpdateLatenessRuleDto) {
-    const rule = await this.latenessRuleModel.findByIdAndUpdate(
-      id,
-      dto,
-      { new: true }
-    ).exec();
+    const rule = await this.latenessRuleModel
+      .findByIdAndUpdate(id, dto, { new: true })
+      .exec();
 
     if (!rule) {
       throw new NotFoundException(`Lateness rule with ID ${id} not found`);
@@ -765,7 +837,10 @@ export class TimeManagementService {
    * Get active overtime rule's minimum minutes threshold
    */
   private async getOvertimeThreshold(): Promise<number> {
-    const activeRule = await this.overtimeRuleModel.findOne({ active: true, approved: true });
+    const activeRule = await this.overtimeRuleModel.findOne({
+      active: true,
+      approved: true,
+    });
     return activeRule?.minMinutesBeforeOvertime || 480; // Default 8 hours
   }
 
@@ -773,7 +848,10 @@ export class TimeManagementService {
    * Get active overtime rule's multiplier
    */
   private async getOvertimeMultiplier(): Promise<number> {
-    const activeRule = await this.overtimeRuleModel.findOne({ active: true, approved: true });
+    const activeRule = await this.overtimeRuleModel.findOne({
+      active: true,
+      approved: true,
+    });
     return activeRule?.weekdayMultiplier || 1.5; // Default 1.5x
   }
 
@@ -805,8 +883,9 @@ export class TimeManagementService {
       .find(query)
       .populate({
         path: 'employeeId',
-        select: 'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
-        populate: { path: 'primaryDepartmentId', select: 'name' }
+        select:
+          'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
+        populate: { path: 'primaryDepartmentId', select: 'name' },
       })
       .sort({ date: -1 })
       .exec();
@@ -815,7 +894,9 @@ export class TimeManagementService {
     let filteredRecords = records;
     if (dto.departmentId) {
       filteredRecords = records.filter((record: any) => {
-        const deptId = record.employeeId?.primaryDepartmentId?._id || record.employeeId?.primaryDepartmentId;
+        const deptId =
+          record.employeeId?.primaryDepartmentId?._id ||
+          record.employeeId?.primaryDepartmentId;
         return deptId?.toString() === dto.departmentId;
       });
     }
@@ -832,22 +913,32 @@ export class TimeManagementService {
     const multiplier = await this.getOvertimeMultiplier();
 
     // Calculate overtime data
-    const overtimeData = filteredRecords.map(record => {
-      const totalWorkMinutes = record.totalWorkMinutes || 0;
-      const overtimeMinutes = Math.max(0, totalWorkMinutes - overtimeThreshold);
-      return {
-        employee: record.employeeId,
-        date: record.date,
-        totalWorkMinutes,
-        overtimeMinutes,
-        overtimeHours: Math.round(overtimeMinutes / 60 * 100) / 100,
-        estimatedPay: overtimeMinutes > 0 ? `${multiplier}x rate` : null,
-      };
-    }).filter(r => r.overtimeMinutes > 0);
+    const overtimeData = filteredRecords
+      .map((record) => {
+        const totalWorkMinutes = record.totalWorkMinutes || 0;
+        const overtimeMinutes = Math.max(
+          0,
+          totalWorkMinutes - overtimeThreshold,
+        );
+        return {
+          employee: record.employeeId,
+          date: record.date,
+          totalWorkMinutes,
+          overtimeMinutes,
+          overtimeHours: Math.round((overtimeMinutes / 60) * 100) / 100,
+          estimatedPay: overtimeMinutes > 0 ? `${multiplier}x rate` : null,
+        };
+      })
+      .filter((r) => r.overtimeMinutes > 0);
 
     // Summary statistics
-    const totalOvertimeMinutes = overtimeData.reduce((sum, r) => sum + r.overtimeMinutes, 0);
-    const uniqueEmployees = new Set(overtimeData.map(r => (r.employee as any)?._id?.toString())).size;
+    const totalOvertimeMinutes = overtimeData.reduce(
+      (sum, r) => sum + r.overtimeMinutes,
+      0,
+    );
+    const uniqueEmployees = new Set(
+      overtimeData.map((r) => (r.employee as any)?._id?.toString()),
+    ).size;
 
     return {
       startDate: dto.startDate,
@@ -855,13 +946,14 @@ export class TimeManagementService {
       totalRecords: overtimeData.length,
       summary: {
         totalOvertimeMinutes,
-        totalOvertimeHours: Math.round(totalOvertimeMinutes / 60 * 100) / 100,
+        totalOvertimeHours: Math.round((totalOvertimeMinutes / 60) * 100) / 100,
         employeesWithOvertime: uniqueEmployees,
         overtimeThresholdMinutes: overtimeThreshold,
         multiplier,
-        averageOvertimePerRecord: overtimeData.length > 0
-          ? Math.round(totalOvertimeMinutes / overtimeData.length)
-          : 0,
+        averageOvertimePerRecord:
+          overtimeData.length > 0
+            ? Math.round(totalOvertimeMinutes / overtimeData.length)
+            : 0,
       },
       data: overtimeData,
     };
@@ -884,11 +976,16 @@ export class TimeManagementService {
       query.employeeId = new Types.ObjectId(dto.employeeId);
     }
 
-    console.log('[DEBUG] getLatenessReport query:', JSON.stringify(query, null, 2));
+    console.log(
+      '[DEBUG] getLatenessReport query:',
+      JSON.stringify(query, null, 2),
+    );
 
     // Debug: count all records first
     const totalCount = await this.attendanceRecordModel.countDocuments({});
-    const lateCount = await this.attendanceRecordModel.countDocuments({ isLate: true });
+    const lateCount = await this.attendanceRecordModel.countDocuments({
+      isLate: true,
+    });
     console.log('[DEBUG] Total records in DB:', totalCount);
     console.log('[DEBUG] Late records in DB:', lateCount);
 
@@ -896,8 +993,9 @@ export class TimeManagementService {
       .find(query)
       .populate({
         path: 'employeeId',
-        select: 'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
-        populate: { path: 'primaryDepartmentId', select: 'name' }
+        select:
+          'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
+        populate: { path: 'primaryDepartmentId', select: 'name' },
       })
       .sort({ date: -1 })
       .exec();
@@ -908,7 +1006,9 @@ export class TimeManagementService {
     let filteredRecords = records;
     if (dto.departmentId) {
       filteredRecords = records.filter((record: any) => {
-        const deptId = record.employeeId?.primaryDepartmentId?._id || record.employeeId?.primaryDepartmentId;
+        const deptId =
+          record.employeeId?.primaryDepartmentId?._id ||
+          record.employeeId?.primaryDepartmentId;
         return deptId?.toString() === dto.departmentId;
       });
     }
@@ -922,7 +1022,7 @@ export class TimeManagementService {
 
     const gracePeriod = await this.getLatenessGracePeriod();
 
-    const latenessData = filteredRecords.map(record => ({
+    const latenessData = filteredRecords.map((record) => ({
       employee: record.employeeId,
       date: record.date,
       lateMinutes: record.lateMinutes || 0,
@@ -930,9 +1030,14 @@ export class TimeManagementService {
     }));
 
     // Summary statistics
-    const totalLateMinutes = latenessData.reduce((sum, r) => sum + r.lateMinutes, 0);
-    const uniqueEmployees = new Set(latenessData.map(r => (r.employee as any)?._id?.toString())).size;
-    const beyondGraceCount = latenessData.filter(r => r.beyondGrace).length;
+    const totalLateMinutes = latenessData.reduce(
+      (sum, r) => sum + r.lateMinutes,
+      0,
+    );
+    const uniqueEmployees = new Set(
+      latenessData.map((r) => (r.employee as any)?._id?.toString()),
+    ).size;
+    const beyondGraceCount = latenessData.filter((r) => r.beyondGrace).length;
 
     return {
       startDate: dto.startDate,
@@ -940,21 +1045,24 @@ export class TimeManagementService {
       totalRecords: latenessData.length,
       debug: {
         totalCount: await this.attendanceRecordModel.countDocuments({}),
-        lateCount: await this.attendanceRecordModel.countDocuments({ isLate: true }),
+        lateCount: await this.attendanceRecordModel.countDocuments({
+          isLate: true,
+        }),
         queryRecordsCount: records.length,
         collectionName: this.attendanceRecordModel.collection.name,
         rawQuery: JSON.stringify(query),
       },
       summary: {
         totalLateMinutes,
-        totalLateHours: Math.round(totalLateMinutes / 60 * 100) / 100,
+        totalLateHours: Math.round((totalLateMinutes / 60) * 100) / 100,
         employeesLate: uniqueEmployees,
         gracePeriodMinutes: gracePeriod,
         beyondGraceCount,
         withinGraceCount: latenessData.length - beyondGraceCount,
-        averageLateMinutes: latenessData.length > 0
-          ? Math.round(totalLateMinutes / latenessData.length)
-          : 0,
+        averageLateMinutes:
+          latenessData.length > 0
+            ? Math.round(totalLateMinutes / latenessData.length)
+            : 0,
       },
       data: latenessData,
     };
@@ -981,8 +1089,9 @@ export class TimeManagementService {
       .find(exceptionQuery)
       .populate({
         path: 'employeeId',
-        select: 'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
-        populate: { path: 'primaryDepartmentId', select: 'name' }
+        select:
+          'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
+        populate: { path: 'primaryDepartmentId', select: 'name' },
       })
       .populate('attendanceRecordId', 'date')
       .populate('assignedTo', 'firstName lastName fullName')
@@ -993,7 +1102,9 @@ export class TimeManagementService {
     let filteredExceptions = exceptions;
     if (dto.departmentId) {
       filteredExceptions = exceptions.filter((exc: any) => {
-        const deptId = exc.employeeId?.primaryDepartmentId?._id || exc.employeeId?.primaryDepartmentId;
+        const deptId =
+          exc.employeeId?.primaryDepartmentId?._id ||
+          exc.employeeId?.primaryDepartmentId;
         return deptId?.toString() === dto.departmentId;
       });
     }
@@ -1013,7 +1124,9 @@ export class TimeManagementService {
       byStatus[exc.status] = (byStatus[exc.status] || 0) + 1;
     });
 
-    const uniqueEmployees = new Set(filteredExceptions.map((e: any) => e.employeeId?._id?.toString())).size;
+    const uniqueEmployees = new Set(
+      filteredExceptions.map((e: any) => e.employeeId?._id?.toString()),
+    ).size;
 
     return {
       startDate: dto.startDate,
@@ -1060,8 +1173,9 @@ export class TimeManagementService {
       .find(query)
       .populate({
         path: 'employeeId',
-        select: 'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
-        populate: { path: 'primaryDepartmentId', select: 'name' }
+        select:
+          'firstName lastName fullName employeeNumber primaryDepartmentId contractType',
+        populate: { path: 'primaryDepartmentId', select: 'name' },
       })
       .sort({ date: -1 })
       .exec();
@@ -1070,7 +1184,9 @@ export class TimeManagementService {
     let filteredRecords = records;
     if (dto.departmentId) {
       filteredRecords = records.filter((record: any) => {
-        const deptId = record.employeeId?.primaryDepartmentId?._id || record.employeeId?.primaryDepartmentId;
+        const deptId =
+          record.employeeId?.primaryDepartmentId?._id ||
+          record.employeeId?.primaryDepartmentId;
         return deptId?.toString() === dto.departmentId;
       });
     }
@@ -1083,21 +1199,36 @@ export class TimeManagementService {
     }
 
     // Summary statistics
-    const totalWorkMinutes = filteredRecords.reduce((sum, r) => sum + (r.totalWorkMinutes || 0), 0);
-    const lateCount = filteredRecords.filter(r => r.isLate).length;
-    const missedPunchCount = filteredRecords.filter(r => r.hasMissedPunch).length;
-    const onTimeCount = filteredRecords.filter(r => !r.isLate && !r.hasMissedPunch).length;
-    const uniqueEmployees = new Set(filteredRecords.map((r: any) => r.employeeId?._id?.toString())).size;
+    const totalWorkMinutes = filteredRecords.reduce(
+      (sum, r) => sum + (r.totalWorkMinutes || 0),
+      0,
+    );
+    const lateCount = filteredRecords.filter((r) => r.isLate).length;
+    const missedPunchCount = filteredRecords.filter(
+      (r) => r.hasMissedPunch,
+    ).length;
+    const onTimeCount = filteredRecords.filter(
+      (r) => !r.isLate && !r.hasMissedPunch,
+    ).length;
+    const uniqueEmployees = new Set(
+      filteredRecords.map((r: any) => r.employeeId?._id?.toString()),
+    ).size;
 
     // Calculate averages
-    const avgWorkMinutes = filteredRecords.length > 0
-      ? Math.round(totalWorkMinutes / filteredRecords.length)
-      : 0;
-    const totalLateMinutes = filteredRecords.reduce((sum, r) => sum + (r.lateMinutes || 0), 0);
+    const avgWorkMinutes =
+      filteredRecords.length > 0
+        ? Math.round(totalWorkMinutes / filteredRecords.length)
+        : 0;
+    const totalLateMinutes = filteredRecords.reduce(
+      (sum, r) => sum + (r.lateMinutes || 0),
+      0,
+    );
 
     // Get overtime threshold for reference
     const overtimeThreshold = await this.getOvertimeThreshold();
-    const overtimeRecords = filteredRecords.filter(r => (r.totalWorkMinutes || 0) > overtimeThreshold);
+    const overtimeRecords = filteredRecords.filter(
+      (r) => (r.totalWorkMinutes || 0) > overtimeThreshold,
+    );
 
     return {
       startDate: dto.startDate,
@@ -1107,19 +1238,21 @@ export class TimeManagementService {
         totalRecords: filteredRecords.length,
         uniqueEmployees,
         totalWorkMinutes,
-        totalWorkHours: Math.round(totalWorkMinutes / 60 * 100) / 100,
+        totalWorkHours: Math.round((totalWorkMinutes / 60) * 100) / 100,
         averageWorkMinutes: avgWorkMinutes,
-        averageWorkHours: Math.round(avgWorkMinutes / 60 * 100) / 100,
+        averageWorkHours: Math.round((avgWorkMinutes / 60) * 100) / 100,
         lateCount,
-        latePercentage: filteredRecords.length > 0
-          ? Math.round(lateCount / filteredRecords.length * 100)
-          : 0,
+        latePercentage:
+          filteredRecords.length > 0
+            ? Math.round((lateCount / filteredRecords.length) * 100)
+            : 0,
         totalLateMinutes,
         missedPunchCount,
         onTimeCount,
-        onTimePercentage: filteredRecords.length > 0
-          ? Math.round(onTimeCount / filteredRecords.length * 100)
-          : 0,
+        onTimePercentage:
+          filteredRecords.length > 0
+            ? Math.round((onTimeCount / filteredRecords.length) * 100)
+            : 0,
         overtimeRecords: overtimeRecords.length,
       },
       data: filteredRecords,
@@ -1161,8 +1294,14 @@ export class TimeManagementService {
   /**
    * Calculate overtime minutes based on active overtime rule
    */
-  async calculateOvertimeMinutes(totalWorkMinutes: number, date: Date): Promise<number> {
-    const activeRule = await this.overtimeRuleModel.findOne({ active: true, approved: true });
+  async calculateOvertimeMinutes(
+    totalWorkMinutes: number,
+    date: Date,
+  ): Promise<number> {
+    const activeRule = await this.overtimeRuleModel.findOne({
+      active: true,
+      approved: true,
+    });
     if (!activeRule) return 0;
 
     const minMinutes = activeRule.minMinutesBeforeOvertime || 480; // Default 8 hours
@@ -1174,9 +1313,17 @@ export class TimeManagementService {
   /**
    * Calculate lateness penalty minutes based on active lateness rule
    */
-  async calculateLatenessMinutes(latenessMinutes: number, employeeId: string, date: Date): Promise<number> {
+  async calculateLatenessMinutes(
+    latenessMinutes: number,
+    employeeId: string,
+    date: Date,
+  ): Promise<number> {
     // Check if we should suppress penalty
-    const shouldSuppress = await this.leavesIntegration.shouldSuppressLatenessPenalty(employeeId, date);
+    const shouldSuppress =
+      await this.leavesIntegration.shouldSuppressLatenessPenalty(
+        employeeId,
+        date,
+      );
     if (shouldSuppress) return 0;
 
     const isHoliday = await this.isHoliday(date);
@@ -1191,7 +1338,9 @@ export class TimeManagementService {
     const penaltyMinutes = latenessMinutes - gracePeriod;
     const maxDeduction = activeRule.maxDeductionMinutes || 0;
 
-    return maxDeduction > 0 ? Math.min(penaltyMinutes, maxDeduction) : penaltyMinutes;
+    return maxDeduction > 0
+      ? Math.min(penaltyMinutes, maxDeduction)
+      : penaltyMinutes;
   }
 
   // ==================== BACKGROUND JOBS ====================
@@ -1244,7 +1393,10 @@ export class TimeManagementService {
       const validRecordIds: string[] = [];
 
       for (let i = 0; i < record.dates.length; i++) {
-        const isOnLeave = await this.isEmployeeOnLeave(employeeId, record.dates[i]);
+        const isOnLeave = await this.isEmployeeOnLeave(
+          employeeId,
+          record.dates[i],
+        );
         const isHoliday = await this.isHoliday(record.dates[i]);
 
         if (!isOnLeave && !isHoliday) {
@@ -1255,7 +1407,8 @@ export class TimeManagementService {
 
       if (actualLateCount >= threshold) {
         // Get employee's manager for notification and assignment
-        const managerId = await this.orgStructureIntegration.getEmployeeManager(employeeId);
+        const managerId =
+          await this.orgStructureIntegration.getEmployeeManager(employeeId);
         const assignedTo = managerId || employeeId; // Assign to manager or self
 
         // Create TimeException via performance integration
@@ -1279,7 +1432,9 @@ export class TimeManagementService {
       }
     }
 
-    this.logger.log(`[CRON] flagRepeatedLateness completed: ${flaggedCount} employees flagged`);
+    this.logger.log(
+      `[CRON] flagRepeatedLateness completed: ${flaggedCount} employees flagged`,
+    );
   }
 
   /**
@@ -1310,11 +1465,18 @@ export class TimeManagementService {
       const isHoliday = await this.isHoliday(yesterday);
 
       // Calculate overtime
-      const overtimeMinutes = await this.calculateOvertimeMinutes(record.totalWorkMinutes || 0, yesterday);
+      const overtimeMinutes = await this.calculateOvertimeMinutes(
+        record.totalWorkMinutes || 0,
+        yesterday,
+      );
 
       // Calculate lateness penalty (use lateMinutes from schema)
       const lateMinutes = record.lateMinutes || 0;
-      const penaltyMinutes = await this.calculateLatenessMinutes(lateMinutes, employeeIdStr, yesterday);
+      const penaltyMinutes = await this.calculateLatenessMinutes(
+        lateMinutes,
+        employeeIdStr,
+        yesterday,
+      );
 
       // Build exceptions list
       const exceptions: PayrollException[] = [];
@@ -1340,7 +1502,9 @@ export class TimeManagementService {
       const hasLatenessException = await this.timeExceptionModel.exists({
         employeeId: new Types.ObjectId(employeeIdStr),
         type: TimeExceptionType.REPEATED_LATENESS,
-        status: { $in: [TimeExceptionStatus.OPEN, TimeExceptionStatus.ESCALATED] },
+        status: {
+          $in: [TimeExceptionStatus.OPEN, TimeExceptionStatus.ESCALATED],
+        },
       });
 
       if (hasLatenessException) {
@@ -1365,9 +1529,12 @@ export class TimeManagementService {
     }
 
     // Send to Payroll module
-    const result = await this.payrollIntegration.receiveAttendanceData(payrollData);
+    const result =
+      await this.payrollIntegration.receiveAttendanceData(payrollData);
 
-    this.logger.log(`[CRON] syncToPayroll completed: ${result.syncedCount} synced, ${result.failedCount} failed`);
+    this.logger.log(
+      `[CRON] syncToPayroll completed: ${result.syncedCount} synced, ${result.failedCount} failed`,
+    );
   }
 
   /**
@@ -1398,10 +1565,14 @@ export class TimeManagementService {
       request.status = CorrectionRequestStatus.ESCALATED;
       await request.save();
 
-      const employeeId = request.employeeId?.toString() || (request.employeeId as any)?._id?.toString();
+      const employeeId =
+        request.employeeId?.toString() ||
+        (request.employeeId as any)?._id?.toString();
 
       // Get manager for escalation
-      const managerId = employeeId ? await this.orgStructureIntegration.getEmployeeManager(employeeId) : null;
+      const managerId = employeeId
+        ? await this.orgStructureIntegration.getEmployeeManager(employeeId)
+        : null;
 
       // Send escalation notification
       if (managerId) {
@@ -1418,7 +1589,8 @@ export class TimeManagementService {
         await this.notificationIntegration.notify({
           type: 'REQUEST_ESCALATED' as any,
           recipientId: employeeId,
-          message: 'Your correction request has been escalated due to pending approval for more than 48 hours',
+          message:
+            'Your correction request has been escalated due to pending approval for more than 48 hours',
           priority: 'HIGH' as any,
         });
       }
@@ -1428,11 +1600,15 @@ export class TimeManagementService {
 
     // If close to payroll cut-off, send warning to HR
     if (daysUntilCutoff <= 3 && pendingRequests.length > 0) {
-      this.logger.warn(`[CRON] Payroll cut-off in ${daysUntilCutoff} days with ${pendingRequests.length} pending requests`);
+      this.logger.warn(
+        `[CRON] Payroll cut-off in ${daysUntilCutoff} days with ${pendingRequests.length} pending requests`,
+      );
       // TODO: Get HR admin IDs and send warnings
     }
 
-    this.logger.log(`[CRON] escalatePendingRequests completed: ${escalatedCount} escalated`);
+    this.logger.log(
+      `[CRON] escalatePendingRequests completed: ${escalatedCount} escalated`,
+    );
   }
 
   /**
@@ -1457,7 +1633,8 @@ export class TimeManagementService {
         await record.save();
 
         const employeeId = record.employeeId.toString();
-        const managerId = await this.orgStructureIntegration.getEmployeeManager(employeeId);
+        const managerId =
+          await this.orgStructureIntegration.getEmployeeManager(employeeId);
 
         // Use notification integration
         await this.notificationIntegration.notifyMissedPunch(
@@ -1470,7 +1647,9 @@ export class TimeManagementService {
       }
     }
 
-    this.logger.log(`[CRON] flagMissedPunches completed: ${flaggedCount} employees flagged`);
+    this.logger.log(
+      `[CRON] flagMissedPunches completed: ${flaggedCount} employees flagged`,
+    );
   }
 
   /**
@@ -1505,6 +1684,8 @@ export class TimeManagementService {
       }
     }
 
-    this.logger.log(`[CRON] checkExpiringShifts completed: ${expiringShifts.length} expiring shifts notified`);
+    this.logger.log(
+      `[CRON] checkExpiringShifts completed: ${expiringShifts.length} expiring shifts notified`,
+    );
   }
 }

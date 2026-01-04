@@ -43,4 +43,4 @@ import { NotificationModule } from '../notification/notification.module';
   providers: [PerformanceService],
   exports: [PerformanceService],
 })
-export class PerformanceModule { }
+export class PerformanceModule {}

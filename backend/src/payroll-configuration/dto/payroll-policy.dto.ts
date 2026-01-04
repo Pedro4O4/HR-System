@@ -1,7 +1,20 @@
 // src/payroll-configuration/dto/payroll-policy.dto.ts
-import { IsBoolean, IsNumber, IsOptional, IsString, Min, Max, IsDateString, ValidateNested, IsObject } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  Max,
+  IsDateString,
+  ValidateNested,
+  IsObject,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { PolicyType, Applicability } from '../enums/payroll-configuration-enums';
+import {
+  PolicyType,
+  Applicability,
+} from '../enums/payroll-configuration-enums';
 
 class RuleDefinitionDto {
   @IsOptional()

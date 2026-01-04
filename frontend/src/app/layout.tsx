@@ -8,6 +8,7 @@ import { useState } from 'react';
 import theme from '@/theme/theme';
 import { Inter } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
+import EmotionCacheProvider from '@/lib/emotion-cache';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -29,11 +30,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <AuthProvider>{children}</AuthProvider>
-            <Toaster />
-          </ThemeProvider>
+          <EmotionCacheProvider>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <AuthProvider>{children}</AuthProvider>
+              <Toaster />
+            </ThemeProvider>
+          </EmotionCacheProvider>
         </QueryClientProvider>
       </body>
     </html>

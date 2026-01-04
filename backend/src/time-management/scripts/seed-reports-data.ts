@@ -6,9 +6,14 @@
 import mongoose from 'mongoose';
 import { AttendanceRecordSchema } from '../models/attendance-record.schema';
 import { TimeExceptionSchema } from '../models/time-exception.schema';
-import { TimeExceptionType, TimeExceptionStatus, PunchType } from '../models/enums';
+import {
+  TimeExceptionType,
+  TimeExceptionStatus,
+  PunchType,
+} from '../models/enums';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hr-system';
+const MONGODB_URI =
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/hr-system';
 
 // Employee IDs from the system (from employee_profiles collection)
 const employeeIds = [
@@ -30,7 +35,10 @@ async function seedReportsData() {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    const AttendanceRecord = mongoose.model('AttendanceRecord', AttendanceRecordSchema);
+    const AttendanceRecord = mongoose.model(
+      'AttendanceRecord',
+      AttendanceRecordSchema,
+    );
     const TimeException = mongoose.model('TimeException', TimeExceptionSchema);
 
     // Clear existing data
@@ -43,20 +51,20 @@ async function seedReportsData() {
 
     // Generate 30 days of attendance data for each employee
     const today = new Date();
-    
+
     for (let dayOffset = 0; dayOffset < 30; dayOffset++) {
       const date = new Date(today);
       date.setDate(date.getDate() - dayOffset);
       date.setHours(0, 0, 0, 0);
-      
+
       // Skip weekends
       if (date.getDay() === 0 || date.getDay() === 6) continue;
 
       for (const empId of employeeIds) {
         // Random scenarios
         const scenario = Math.random();
-        
-        let clockInHour = 8;
+
+        const clockInHour = 8;
         let clockInMinute = 0;
         let clockOutHour = 17;
         let clockOutMinute = 0;
@@ -81,7 +89,7 @@ async function seedReportsData() {
           // 10% chance: Overtime (1-3 hours)
           const overtimeHours = Math.floor(Math.random() * 3) + 1;
           clockOutHour = 17 + overtimeHours;
-          totalWorkMinutes = 540 + (overtimeHours * 60);
+          totalWorkMinutes = 540 + overtimeHours * 60;
         } else if (scenario < 0.3) {
           // 5% chance: Early leave
           clockOutHour = 15;
@@ -90,7 +98,8 @@ async function seedReportsData() {
           // 70% chance: Normal day with slight variations
           clockInMinute = Math.floor(Math.random() * 10);
           clockOutMinute = Math.floor(Math.random() * 30);
-          totalWorkMinutes = ((clockOutHour - clockInHour) * 60) + clockOutMinute - clockInMinute;
+          totalWorkMinutes =
+            (clockOutHour - clockInHour) * 60 + clockOutMinute - clockInMinute;
         }
 
         const clockInTime = new Date(date);
@@ -100,11 +109,15 @@ async function seedReportsData() {
         clockOutTime.setHours(clockOutHour, clockOutMinute, 0, 0);
 
         const punches = [
-          { type: PunchType.IN, time: clockInTime, location: 'Office HQ' }
+          { type: PunchType.IN, time: clockInTime, location: 'Office HQ' },
         ];
 
         if (!hasMissedPunch) {
-          punches.push({ type: PunchType.OUT, time: clockOutTime, location: 'Office HQ' });
+          punches.push({
+            type: PunchType.OUT,
+            time: clockOutTime,
+            location: 'Office HQ',
+          });
         }
 
         const record = {
@@ -129,14 +142,17 @@ async function seedReportsData() {
             type: TimeExceptionType.MISSED_PUNCH,
             attendanceRecordId: savedRecord._id,
             assignedTo: new mongoose.Types.ObjectId(employeeIds[1]), // HR Manager
-            status: dayOffset > 5 ? TimeExceptionStatus.RESOLVED : TimeExceptionStatus.OPEN,
+            status:
+              dayOffset > 5
+                ? TimeExceptionStatus.RESOLVED
+                : TimeExceptionStatus.OPEN,
             reason: 'System did not record clock out',
           });
           timeExceptions.push(exception);
-          
+
           // Update record with exception ID
           await AttendanceRecord.findByIdAndUpdate(savedRecord._id, {
-            $push: { exceptionIds: exception._id }
+            $push: { exceptionIds: exception._id },
           });
         }
 
@@ -146,13 +162,16 @@ async function seedReportsData() {
             type: TimeExceptionType.LATE,
             attendanceRecordId: savedRecord._id,
             assignedTo: new mongoose.Types.ObjectId(employeeIds[1]), // HR Manager
-            status: dayOffset > 7 ? TimeExceptionStatus.RESOLVED : TimeExceptionStatus.PENDING,
+            status:
+              dayOffset > 7
+                ? TimeExceptionStatus.RESOLVED
+                : TimeExceptionStatus.PENDING,
             reason: `Late by ${lateMinutes} minutes`,
           });
           timeExceptions.push(exception);
-          
+
           await AttendanceRecord.findByIdAndUpdate(savedRecord._id, {
-            $push: { exceptionIds: exception._id }
+            $push: { exceptionIds: exception._id },
           });
         }
       }
@@ -161,10 +180,10 @@ async function seedReportsData() {
     // Add some repeated lateness exceptions
     const repeatedLatenessEmployees = employeeIds.slice(3, 6);
     for (const empId of repeatedLatenessEmployees) {
-      const firstRecord = await AttendanceRecord.findOne({ 
-        employeeId: new mongoose.Types.ObjectId(empId) 
+      const firstRecord = await AttendanceRecord.findOne({
+        employeeId: new mongoose.Types.ObjectId(empId),
       });
-      
+
       if (firstRecord) {
         const exception = await TimeException.create({
           employeeId: new mongoose.Types.ObjectId(empId),
@@ -181,18 +200,19 @@ async function seedReportsData() {
     // Add some overtime request exceptions
     for (let i = 0; i < 5; i++) {
       const empId = employeeIds[Math.floor(Math.random() * employeeIds.length)];
-      const record = await AttendanceRecord.findOne({ 
+      const record = await AttendanceRecord.findOne({
         employeeId: new mongoose.Types.ObjectId(empId),
-        totalWorkMinutes: { $gt: 540 }
+        totalWorkMinutes: { $gt: 540 },
       });
-      
+
       if (record) {
         const exception = await TimeException.create({
           employeeId: new mongoose.Types.ObjectId(empId),
           type: TimeExceptionType.OVERTIME_REQUEST,
           attendanceRecordId: record._id,
           assignedTo: new mongoose.Types.ObjectId(employeeIds[4]), // Dept Head
-          status: i < 3 ? TimeExceptionStatus.APPROVED : TimeExceptionStatus.PENDING,
+          status:
+            i < 3 ? TimeExceptionStatus.APPROVED : TimeExceptionStatus.PENDING,
           reason: 'Overtime for project deadline',
         });
         timeExceptions.push(exception);
@@ -202,22 +222,29 @@ async function seedReportsData() {
     console.log(`\n=== SEED DATA SUMMARY ===`);
     console.log(`Attendance Records: ${attendanceRecords.length}`);
     console.log(`Time Exceptions: ${timeExceptions.length}`);
-    
+
     // Report summary stats
-    const lateRecords = attendanceRecords.filter(r => r.isLate);
-    const missedPunchRecords = attendanceRecords.filter(r => r.hasMissedPunch);
-    const overtimeRecords = attendanceRecords.filter(r => r.totalWorkMinutes > 540);
-    
+    const lateRecords = attendanceRecords.filter((r) => r.isLate);
+    const missedPunchRecords = attendanceRecords.filter(
+      (r) => r.hasMissedPunch,
+    );
+    const overtimeRecords = attendanceRecords.filter(
+      (r) => r.totalWorkMinutes > 540,
+    );
+
     console.log(`\n--- Attendance Breakdown ---`);
     console.log(`Late arrivals: ${lateRecords.length}`);
     console.log(`Missed punches: ${missedPunchRecords.length}`);
     console.log(`Overtime records: ${overtimeRecords.length}`);
-    
-    const exceptionsByType = timeExceptions.reduce((acc, e) => {
-      acc[e.type] = (acc[e.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
+
+    const exceptionsByType = timeExceptions.reduce(
+      (acc, e) => {
+        acc[e.type] = (acc[e.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
     console.log(`\n--- Exceptions by Type ---`);
     Object.entries(exceptionsByType).forEach(([type, count]) => {
       console.log(`${type}: ${count}`);
@@ -226,7 +253,6 @@ async function seedReportsData() {
     await mongoose.disconnect();
     console.log('\nDisconnected from MongoDB');
     console.log('Reports data seeding complete!');
-
   } catch (error) {
     console.error('Error seeding reports data:', error);
     process.exit(1);

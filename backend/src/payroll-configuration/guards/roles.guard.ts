@@ -13,7 +13,7 @@ export const Roles = (...roles: SystemRole[]) => SetMetadata(ROLES_KEY, roles);
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) { }
+  constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<SystemRole[]>(
@@ -45,7 +45,7 @@ export class RolesGuard implements CanActivate {
     console.log('------------------------------------------------');
 
     const hasRole = requiredRoles.some((requiredRole) =>
-      userRoles.some(userRole => {
+      userRoles.some((userRole) => {
         if (!userRole) return false;
 
         const uRole = String(userRole).toLowerCase().trim();
@@ -55,8 +55,10 @@ export class RolesGuard implements CanActivate {
         if (uRole === rRole) return true;
 
         // 2. Key match (e.g. 'system_admin' vs 'System Admin')
-        const enumKey = Object.keys(SystemRole).find(key =>
-          SystemRole[key as keyof typeof SystemRole].toLowerCase().trim() === rRole
+        const enumKey = Object.keys(SystemRole).find(
+          (key) =>
+            SystemRole[key as keyof typeof SystemRole].toLowerCase().trim() ===
+            rRole,
         );
         if (enumKey && uRole === enumKey.toLowerCase().trim()) return true;
 
@@ -64,11 +66,13 @@ export class RolesGuard implements CanActivate {
         if (uRole.includes('admin') && rRole.includes('admin')) return true;
 
         return false;
-      })
+      }),
     );
 
     if (!hasRole) {
-      console.error(`Access Denied. User roles: ${JSON.stringify(userRoles)}, Required: ${JSON.stringify(requiredRoles)}`);
+      console.error(
+        `Access Denied. User roles: ${JSON.stringify(userRoles)}, Required: ${JSON.stringify(requiredRoles)}`,
+      );
       throw new ForbiddenException(
         `Access denied. Required: [${requiredRoles.join(', ')}]. Yours: [${userRoles.join(', ') || 'none'}]. Details: ${JSON.stringify({ id: user.userId || user.sub, email: user.email, role: user.role })}`,
       );
@@ -77,4 +81,3 @@ export class RolesGuard implements CanActivate {
     return true;
   }
 }
-

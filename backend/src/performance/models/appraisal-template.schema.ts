@@ -74,7 +74,8 @@ export class TemplateSection {
   criteria: EvaluationCriterion[];
 }
 
-export const TemplateSectionSchema = SchemaFactory.createForClass(TemplateSection);
+export const TemplateSectionSchema =
+  SchemaFactory.createForClass(TemplateSection);
 
 @Schema({ collection: 'appraisal_templates', timestamps: true })
 export class AppraisalTemplate {

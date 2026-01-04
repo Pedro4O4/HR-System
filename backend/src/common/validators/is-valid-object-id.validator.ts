@@ -10,15 +10,15 @@ export class IsValidObjectIdConstraint implements ValidatorConstraintInterface {
   validate(value: any) {
     // Allow null or undefined
     if (value === null || value === undefined) return true;
-    
+
     if (typeof value !== 'string') return false;
-    
+
     const trimmed = value.trim();
     // Reject empty strings
     if (trimmed === '') return true;
     // Reject placeholder strings like "string"
     if (trimmed === 'string' || trimmed.length < 24) return false;
-    
+
     return Types.ObjectId.isValid(trimmed);
   }
 

@@ -3,7 +3,8 @@ import { HydratedDocument, Types } from 'mongoose';
 import { GraduationType } from '../enums/employee-profile.enums';
 import { EmployeeProfile } from './employee-profile.schema';
 
-export type EmployeeQualificationDocument = HydratedDocument<EmployeeQualification>;
+export type EmployeeQualificationDocument =
+  HydratedDocument<EmployeeQualification>;
 
 @Schema({ collection: 'employee_qualifications', timestamps: true })
 export class EmployeeQualification {

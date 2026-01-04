@@ -66,12 +66,11 @@ export default function RunPayrollPage() {
     setError(null);
     setSuccess(null);
 
-    // Fallback to user.userId if employeeId is not available
-    const specialistId = user?.employeeId || user?.userId;
-
+    // Use userId from user object
+    const specialistId = user?.userId;
     if (!specialistId) {
-        setError("Could not identify the current user. Please re-login.");
-        return;
+      setError("Could not identify the current user. Please re-login.");
+      return;
     }
 
     try {

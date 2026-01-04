@@ -39,9 +39,7 @@ import { UpdateCompanySettingsDto } from './dto/company-settings.dto';
 
 @Controller('payroll-configuration')
 export class PayrollConfigurationController {
-  constructor(
-    private readonly payrollService: PayrollConfigurationService,
-  ) { }
+  constructor(private readonly payrollService: PayrollConfigurationService) {}
 
   /* ================= PAY TYPES ================= */
 
@@ -56,10 +54,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('pay-types/:id')
-  updatePayType(
-    @Param('id') id: string,
-    @Body() dto: UpdatePayTypeDto,
-  ) {
+  updatePayType(@Param('id') id: string, @Body() dto: UpdatePayTypeDto) {
     return this.payrollService.updatePayType(id, dto);
   }
 
@@ -81,10 +76,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('pay-grades/:id')
-  updatePayGrade(
-    @Param('id') id: string,
-    @Body() dto: UpdatePayGradeDto,
-  ) {
+  updatePayGrade(@Param('id') id: string, @Body() dto: UpdatePayGradeDto) {
     return this.payrollService.updatePayGrade(id, dto);
   }
 
@@ -106,10 +98,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('allowances/:id')
-  updateAllowance(
-    @Param('id') id: string,
-    @Body() dto: UpdateAllowanceDto,
-  ) {
+  updateAllowance(@Param('id') id: string, @Body() dto: UpdateAllowanceDto) {
     return this.payrollService.updateAllowance(id, dto);
   }
 
@@ -121,9 +110,7 @@ export class PayrollConfigurationController {
   /* ================= INSURANCE BRACKETS ================= */
 
   @Post('insurance-brackets')
-  createInsuranceBracket(
-    @Body() dto: CreateInsuranceBracketDto,
-  ) {
+  createInsuranceBracket(@Body() dto: CreateInsuranceBracketDto) {
     return this.payrollService.createInsuranceBracket(dto);
   }
 
@@ -134,7 +121,11 @@ export class PayrollConfigurationController {
 
   @Patch('insurance-brackets/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN)
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+  )
   updateInsuranceBracket(
     @Param('id') id: string,
     @Body() dto: UpdateInsuranceBracketDto,
@@ -170,10 +161,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('tax-rules/:id')
-  updateTaxRule(
-    @Param('id') id: string,
-    @Body() dto: UpdateTaxRuleDto,
-  ) {
+  updateTaxRule(@Param('id') id: string, @Body() dto: UpdateTaxRuleDto) {
     return this.payrollService.updateTaxRule(id, dto);
   }
 
@@ -195,10 +183,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('benefits/:id')
-  updateBenefit(
-    @Param('id') id: string,
-    @Body() dto: UpdateBenefitDto,
-  ) {
+  updateBenefit(@Param('id') id: string, @Body() dto: UpdateBenefitDto) {
     return this.payrollService.updateBenefit(id, dto);
   }
 
@@ -265,9 +250,7 @@ export class PayrollConfigurationController {
   }
 
   @Patch('company-settings')
-  updateCompanySettings(
-    @Body() dto: UpdateCompanySettingsDto,
-  ) {
+  updateCompanySettings(@Body() dto: UpdateCompanySettingsDto) {
     return this.payrollService.updateCompanySettings(dto);
   }
 
@@ -316,22 +299,26 @@ export class PayrollConfigurationController {
   // Pay Types
   @Patch('pay-types/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approvePayType(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approvePayType(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approvePayType(id, userId);
   }
 
   @Patch('pay-types/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectPayType(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectPayType(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectPayType(id, userId);
   }
@@ -339,22 +326,26 @@ export class PayrollConfigurationController {
   // Pay Grades
   @Patch('pay-grades/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approvePayGrade(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approvePayGrade(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approvePayGrade(id, userId);
   }
 
   @Patch('pay-grades/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectPayGrade(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectPayGrade(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectPayGrade(id, userId);
   }
@@ -362,22 +353,26 @@ export class PayrollConfigurationController {
   // Allowances
   @Patch('allowances/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approveAllowance(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approveAllowance(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approveAllowance(id, userId);
   }
 
   @Patch('allowances/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectAllowance(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectAllowance(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectAllowance(id, userId);
   }
@@ -385,22 +380,26 @@ export class PayrollConfigurationController {
   // Insurance Brackets
   @Patch('insurance-brackets/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approveInsuranceBracket(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approveInsuranceBracket(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approveInsuranceBracket(id, userId);
   }
 
   @Patch('insurance-brackets/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectInsuranceBracket(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectInsuranceBracket(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectInsuranceBracket(id, userId);
   }
@@ -408,22 +407,26 @@ export class PayrollConfigurationController {
   // Tax Rules
   @Patch('tax-rules/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approveTaxRule(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approveTaxRule(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approveTaxRule(id, userId);
   }
 
   @Patch('tax-rules/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectTaxRule(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectTaxRule(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectTaxRule(id, userId);
   }
@@ -431,22 +434,26 @@ export class PayrollConfigurationController {
   // Benefits
   @Patch('benefits/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approveBenefit(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approveBenefit(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approveBenefit(id, userId);
   }
 
   @Patch('benefits/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectBenefit(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectBenefit(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectBenefit(id, userId);
   }
@@ -454,22 +461,26 @@ export class PayrollConfigurationController {
   // Signing Bonuses
   @Patch('signing-bonuses/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approveSigningBonus(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approveSigningBonus(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approveSigningBonus(id, userId);
   }
 
   @Patch('signing-bonuses/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectSigningBonus(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectSigningBonus(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectSigningBonus(id, userId);
   }
@@ -477,22 +488,26 @@ export class PayrollConfigurationController {
   // Payroll Policies
   @Patch('policies/:id/approve')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  approvePayrollPolicy(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  approvePayrollPolicy(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.approvePayrollPolicy(id, userId);
   }
 
   @Patch('policies/:id/reject')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
-  rejectPayrollPolicy(
-    @Param('id') id: string,
-    @Req() req: any,
-  ) {
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
+  rejectPayrollPolicy(@Param('id') id: string, @Req() req: any) {
     const userId = req.user?.userId;
     return this.payrollService.rejectPayrollPolicy(id, userId);
   }
@@ -500,7 +515,12 @@ export class PayrollConfigurationController {
   // Get all pending configurations for approval dashboard
   @Get('pending-approvals')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.HR_MANAGER, SystemRole.PAYROLL_MANAGER, SystemRole.SYSTEM_ADMIN, SystemRole.HR_ADMIN)
+  @Roles(
+    SystemRole.HR_MANAGER,
+    SystemRole.PAYROLL_MANAGER,
+    SystemRole.SYSTEM_ADMIN,
+    SystemRole.HR_ADMIN,
+  )
   getPendingApprovals() {
     return this.payrollService.getAllPendingConfigurations();
   }

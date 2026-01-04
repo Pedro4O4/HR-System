@@ -1,7 +1,21 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsString, IsOptional, IsEnum, IsDate, IsPhoneNumber, Validate } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsDate,
+  IsPhoneNumber,
+  Validate,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { EmployeeStatus, ContractType, WorkType, Gender, MaritalStatus } from '../enums/employee-profile.enums';
+import {
+  EmployeeStatus,
+  ContractType,
+  WorkType,
+  Gender,
+  MaritalStatus,
+} from '../enums/employee-profile.enums';
 import { IsValidObjectIdConstraint } from '../../common/validators/is-valid-object-id.validator';
 
 export class CreateEmployeeProfileDto {
