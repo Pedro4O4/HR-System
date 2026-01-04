@@ -54,6 +54,6 @@ function useEmotionCache() {
     return {
         cache,
         flush,
-        options: cache.compat ? cache.compat : cache,
+        options: cache,
     };
 }
