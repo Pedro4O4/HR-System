@@ -2,9 +2,10 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { paySlip, PayslipDocument } from './models/payslip.schema';
 import { payrollRuns, payrollRunsDocument } from './models/payrollRuns.schema';
 import {
@@ -25,16 +26,27 @@ export class PayrollExecutionService {
     private payrollRunsModel: Model<payrollRunsDocument>,
     @InjectModel(EmployeeProfile.name)
     private employeeProfileModel: Model<EmployeeProfileDocument>,
-  ) {}
+  ) { }
 
   async getPayslipsByEmployee(employeeId: string): Promise<paySlip[]> {
+    // Validate ObjectId format
+    if (!Types.ObjectId.isValid(employeeId)) {
+      console.warn(`Invalid employeeId format: ${employeeId}`);
+      return []; // Return empty array for invalid IDs
+    }
+
     return this.paySlipModel
-      .find({ employeeId })
+      .find({ employeeId: new Types.ObjectId(employeeId) })
       .sort({ createdAt: -1 })
       .exec();
   }
 
   async getPayslipById(id: string): Promise<paySlip> {
+    // Validate ObjectId format
+    if (!Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid payslip ID format');
+    }
+
     const payslip = await this.paySlipModel.findById(id).exec();
     if (!payslip) throw new NotFoundException('Payslip not found');
     return payslip;
